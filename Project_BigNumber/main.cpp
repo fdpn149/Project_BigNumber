@@ -9,5 +9,5 @@ int main()
 	string input;
 	cin >> input;
 	cout << input;
-	
+	cout << "ABCDEF";
 }
