@@ -8,5 +8,6 @@ int main()
 	Manager m;
 	string input;
 	cin >> input;
+	cout << input;
 	
 }
