@@ -78,12 +78,12 @@ int main()
 					if (isDecimal(input)) {
 						cout << "计" << endl;
 						Decimal decimal = input;
-						cout << decimal;
+						//cout << decimal;
 					}
 					else {
 						cout << "俱计" << endl;
 						Integer integer = input;
-						cout << integer;
+						//cout << integer;
 					}
 				}
 				else {
@@ -96,12 +96,12 @@ int main()
 				if (isDecimal(input)) {
 					cout << "计" << endl;
 					Decimal decimal = input;
-					cout << decimal;
+					//cout << decimal;
 				}
 				else {
 					cout << "俱计" << endl;
 					Integer integer = input;
-					cout << integer;
+					//cout << integer;
 				}
 			}
 			else {

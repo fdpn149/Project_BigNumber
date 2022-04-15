@@ -3,7 +3,7 @@ using namespace std;
 class Integer
 {
 	string value;
-	void process(string str);
+	void calculate(string str);
 public:
 	Integer(string str);
 	friend istream& operator>>(istream& inputStream, Integer& numObj);
