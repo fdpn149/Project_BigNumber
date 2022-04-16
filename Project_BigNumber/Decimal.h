@@ -4,6 +4,7 @@ class Decimal
 {
 	string numerator;
 	string denominator;
+	string value;
 	void calculate(string str);
 public:
 	Decimal(string str);

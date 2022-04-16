@@ -15,7 +15,7 @@ struct Variable {
 
 vector<Variable> variable = { {"abc", "Decimal", "3.14"}, {"defg","Integer","98"}, {"hij", "Decimal", "3.14"} };
 
-bool findExistVariable(string input)
+bool areExistedVariable(string input)
 {
 	stringstream ss(input);
 	string str;
@@ -74,7 +74,7 @@ int main()
 				cout << "砞﹚" << endl;
 			}
 			else {   //跑计
-				if (findExistVariable(input)) {
+				if (areExistedVariable(input)) {
 					if (isDecimal(input)) {
 						cout << "计" << endl;
 						Decimal decimal = input;
@@ -92,7 +92,7 @@ int main()
 			}
 		}
 		else {
-			if (findExistVariable(input)) {
+			if (areExistedVariable(input)) {
 				if (isDecimal(input)) {
 					cout << "计" << endl;
 					Decimal decimal = input;
@@ -114,7 +114,7 @@ int main()
 		//	if (firstChar >= '0' && firstChar <= '9') {   //计
 		//		cout << "计" << endl;
 		//		getline(cin, input);
-		//		if (findExistVariable(input)) {
+		//		if (areExistedVariable(input)) {
 		//			cout << "Τ跑计" << endl;
 		//			if (isDecimal(input))
 		//				cout << "计" << endl;
@@ -128,7 +128,7 @@ int main()
 		//	else if (firstChar == '(') {   //珹腹
 		//		cout << "珹腹" << endl;
 		//		getline(cin, input);
-		//		if (findExistVariable(input)) {
+		//		if (areExistedVariable(input)) {
 		//			cout << "Τ跑计" << endl;
 		//			if (isDecimal(input))
 		//				cout << "计" << endl;
@@ -142,7 +142,7 @@ int main()
 		//	else if (firstChar == '-') {   //璽腹
 		//		cout << "璽腹" << endl;
 		//		getline(cin, input);
-		//		if (findExistVariable(input)) {
+		//		if (areExistedVariable(input)) {
 		//			cout << "Τ跑计" << endl;
 		//			if (isDecimal(input))
 		//				cout << "计" << endl;
@@ -162,7 +162,7 @@ int main()
 		//			cout << "砞﹚" << endl;
 		//		}
 		//		else {   //跑计
-		//			if (findExistVariable(input)) {
+		//			if (areExistedVariable(input)) {
 		//				cout << "Τ跑计" << endl;
 		//				if (isDecimal(input))
 		//					cout << "计" << endl;
@@ -176,7 +176,7 @@ int main()
 		//	}
 		//	else if (isalpha(firstChar)) {   //跑计
 		//		getline(cin, input);
-		//		if (findExistVariable(input)) {
+		//		if (areExistedVariable(input)) {
 		//			cout << "Τ跑计" << endl;
 		//			if (isDecimal(input))
 		//				cout << "计" << endl;
