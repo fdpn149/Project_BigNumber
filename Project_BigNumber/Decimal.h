@@ -7,7 +7,8 @@ class Decimal
 	string value;
 	void calculate(string str);
 public:
-	Decimal(string str);
+	Decimal(const string str);
+	Decimal(const char* str);
 	friend istream& operator>>(istream& inputStream, Decimal& numObj);
 	friend ostream& operator<<(ostream& outputStream, Decimal& numObj);
 };

@@ -54,9 +54,6 @@ string Integer::calculate(string input)
 			ss.str(input);   //更改ss的值
 			ss.seekg(ss_loc + result.length()-1);   //將ss指的位置設回來
 		}
-		else if (now_str[0] == ')') {   //反括號
-
-		}
 		else if (isalpha(now_str[0])) {   //變數
 
 		}
@@ -150,7 +147,14 @@ bool Integer::isAllDigit(string input)
 	return true;
 }
 
-Integer::Integer(string str)
+
+
+Integer::Integer(const string str)
+{
+	value = str;
+}
+
+Integer::Integer(const char* str)
 {
 	if (isAllDigit(str))
 		value = str;
@@ -180,12 +184,98 @@ const string Integer::operator/(const Integer& num) const
 
 const string Integer::operator+(const Integer& num) const
 {
-	return "9292";
+	bool negativeA = this->value[0] == '-' ? true : false;   //是否是負數
+	bool negativeB = num.value[0] == '-' ? true : false;   //是否是負數
+	string numA, numB;
+	numA = negativeA ? this->value.substr(1) : this->value;   //去掉負號
+	numB = negativeB ? num.value.substr(1) : num.value;   //去掉負號
+
+	if ((negativeA ^ negativeB) == false) {   //同號
+		if (numA.size() < numB.size())
+			numA.insert(numA.begin(), numB.size() - numA.size(), '0');   //補0
+		else if(numA.size() > numB.size())
+			numB.insert(numB.begin(), numA.size() - numB.size(), '0');   //補0
+		bool over = false;   //進位
+		for (int i = numA.size() - 1; i >= 0; i--) {
+			numA[i] += numB[i] + over - 48;
+			over = false;
+			if (numA[i] > '9') {
+				over = true;
+				numA[i] -= 10;
+			}
+		}
+		if (over)
+			numA.insert(numA.begin(), '1');
+		if (negativeA)
+			numA.insert(numA.begin(), '-');
+		return numA;
+	}
+	else if (!negativeA) {   //A+(-B)
+		return *this - Integer(numB);
+	}
+	else {   //(-A)+B
+		return num - Integer(numA);
+	}
 }
 
 const string Integer::operator-(const Integer& num) const
 {
-	return "7112";
+	bool negativeA = this->value[0] == '-' ? true : false;   //是否是負數
+	bool negativeB = num.value[0] == '-' ? true : false;   //是否是負數
+	string numA, numB;
+	numA = negativeA ? this->value.substr(1) : this->value;   //去掉負號
+	numB = negativeB ? num.value.substr(1) : num.value;   //去掉負號
+
+	if ((negativeA ^ negativeB) == false) {   //同號
+		if (negativeA)   //(-A)-(-B)
+			numA.swap(numB);   //改成B-A
+		if (numA.size() < numB.size())
+			numA.insert(numA.begin(), numB.size() - numA.size(), '0');   //補0
+		else if (numA.size() > numB.size())
+			numB.insert(numB.begin(), numA.size() - numB.size(), '0');   //補0
+		bool inverse;
+		if (numA < numB) {   //A < B
+			inverse = true;
+			numA.swap(numB);
+		}
+		else   //A > B
+			inverse = false;
+
+		for (int i = 0; i < numA.size(); i++) {
+			numA[i] -= numB[i] - '0';
+			if (numA[i] < '0') {
+				for (int j = i; j >= 1; j--) {
+					numA[j] += 10;
+					numA[j - 1] -= 1;
+					if (numA[j - 1] >= '0')
+						break;
+				}
+			}
+		}
+
+		for (int i = 0; i < numA.size(); i++) {
+			if (numA[i] == '0') {
+				numA.erase(numA.begin() + i);
+				i--;
+			}
+			else
+				break;
+		}
+
+		if (numA.size() == 0)
+			numA = "0";
+
+		if (inverse)
+			return '-' + numA;
+		else
+			return numA;
+	}
+	else if (!negativeA) {   //A-(-B)
+		return *this + Integer(numB);
+	}
+	else {   //(-A)-B
+		return '-' + (num + Integer(numA));
+	}
 }
 
 ostream& operator<<(ostream& outputStream, Integer& numObj)

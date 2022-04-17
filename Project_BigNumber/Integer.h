@@ -3,7 +3,6 @@
 #include <vector>
 #include <cctype>
 using namespace std;
-
 class Integer
 {
 	string value;
@@ -13,7 +12,8 @@ class Integer
 	string split_calculate(vector<string> &number, vector<char> &symbol);
 	bool isAllDigit(string input);
 public:
-	Integer(string str);
+	Integer(const string str);
+	Integer(const char* str);
 	const string operator!() const;   //¶¥­¼
 	const string operator^(const Integer& num) const;   //¦¸¤è
 	const string operator*(const Integer& num) const;   //­¼
