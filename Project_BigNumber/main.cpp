@@ -61,61 +61,55 @@ bool isDecimal(string input)
 
 int main()
 {
-	string a = "9876543210123456789";
-	string b = "0123456789876543210";
-	Integer A = a;
-	Integer B = b;
-	cout << A << endl << B << endl;
-	cout << A - B;
-	//char firstChar;
-	//string input;
+	char firstChar;
+	string input;
 
-	//while (firstChar = cin.peek()) {
-	//	getline(cin, input);
-	//	if (firstChar == 'S') {   //琌跑计┪Set
-	//		stringstream ss(input);
-	//		string str;
-	//		ss >> str;
-	//		if (str == "Set") {   //砞﹚
-	//			cout << "砞﹚" << endl;
-	//		}
-	//		else {   //跑计
-	//			if (areExistedVariable(input)) {
-	//				if (isDecimal(input)) {
-	//					cout << "计" << endl;
-	//					Decimal decimal = input;
-	//					//cout << decimal;
-	//				}
-	//				else {
-	//					cout << "俱计" << endl;
-	//					Integer integer = input.c_str();
-	//					//cout << integer;
-	//				}
-	//			}
-	//			else {
-	//				cout << "тぃ跑计" << endl;
-	//			}
-	//		}
-	//	}
-	//	else if (firstChar != string::npos) {
-	//		if (areExistedVariable(input)) {
-	//			if (isDecimal(input)) {
-	//				cout << "计" << endl;
-	//				Decimal decimal = input;
-	//				//cout << decimal;
-	//			}
-	//			else {
-	//				cout << "俱计" << endl;
-	//				Integer integer = input.c_str();
-	//				//cout << integer;
-	//			}
-	//		}
-	//		else {
-	//			cout << "тぃ跑计" << endl;
-	//		}
-	//	}
-	//	else
-	//		break;
-	//}
+	while (firstChar = cin.peek()) {
+		getline(cin, input);
+		if (firstChar == 'S') {   //琌跑计┪Set
+			stringstream ss(input);
+			string str;
+			ss >> str;
+			if (str == "Set") {   //砞﹚
+				cout << "砞﹚" << endl;
+			}
+			else {   //跑计
+				if (areExistedVariable(input)) {
+					if (isDecimal(input)) {
+						//cout << "计" << endl;
+						Decimal decimal = input;
+						cout << decimal << endl;
+					}
+					else {
+						//cout << "俱计" << endl;
+						Integer integer = input.c_str();
+						cout << integer << endl;
+					}
+				}
+				else {
+					cout << "тぃ跑计" << endl;
+				}
+			}
+		}
+		else if (firstChar != string::npos) {
+			if (areExistedVariable(input)) {
+				if (isDecimal(input)) {
+					//cout << "计" << endl;
+					Decimal decimal = input;
+					cout << decimal << endl;
+				}
+				else {
+					//cout << "俱计" << endl;
+					Integer integer = input.c_str();
+					cout << integer << endl;
+				}
+			}
+			else {
+				cout << "тぃ跑计" << endl;
+			}
+		}
+		else
+			break;
+	}
 }
 

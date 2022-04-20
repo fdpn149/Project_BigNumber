@@ -149,9 +149,17 @@ bool Integer::isAllDigit(string input)
 
 
 
+Integer::Integer()
+{
+	value = "0";
+}
+
 Integer::Integer(const string str)
 {
 	value = str;
+
+	positive = value[0] == '-' ? false : true;   //是否是負數
+	value = positive ? value : value.substr(1);   //去掉負號
 }
 
 Integer::Integer(const char* str)
@@ -160,6 +168,9 @@ Integer::Integer(const char* str)
 		value = str;
 	else
 		value = calculate(str);
+
+	positive = value[0] == '-' ? false : true;   //是否是負數
+	value = positive ? value : value.substr(1);   //去掉負號
 }
 
 const string Integer::operator!() const
@@ -174,23 +185,60 @@ const string Integer::operator^(const Integer& num) const
 
 const string Integer::operator*(const Integer& num) const
 {
-	return "7272";
+	map<int, Integer> products;
+	products[0] = Integer();
+	products[1] = *this;
+	products[2] = products[1] + products[1];
+	products[3] = products[1] + products[2];
+	products[4] = products[2] + products[2];
+	products[5] = products[2] + products[3];
+	products[6] = products[3] + products[3];
+	products[7] = products[3] + products[4];
+	products[8] = products[4] + products[4];
+	products[9] = products[4] + products[5];
+	Integer sum;
+	int digit = 0;
+	for (int i = num.value.length() - 1; i >= 0; i--) {
+		Integer b = products[num.value.at(i) - '0'];
+		b.value.append(digit, '0');
+		sum = sum + b;
+		digit++;
+	}
+	if(!positive == !num.positive)
+		return sum.value;
+	else
+		return '-' + sum.value;
 }
 
 const string Integer::operator/(const Integer& num) const
 {
-	return "7575";
+	map<int, Integer> products;
+	products[1] = num;
+	products[2] = products[1] + products[1];
+	products[3] = products[1] + products[2];
+	products[4] = products[2] + products[2];
+	products[5] = products[2] + products[3];
+	products[6] = products[3] + products[3];
+	products[7] = products[3] + products[4];
+	products[8] = products[4] + products[4];
+	products[9] = products[4] + products[5];
+	products[10] = products[5] + products[5];
+	string originNum = value;
+	string nowNum = originNum.substr(0, num.value.size());
+	int i = 1;
+	while (products[i].value <= nowNum && products[i].value.length() == nowNum.length()) {
+
+	}
+	return "";
 }
 
 const string Integer::operator+(const Integer& num) const
 {
-	bool negativeA = this->value[0] == '-' ? true : false;   //是否是負數
-	bool negativeB = num.value[0] == '-' ? true : false;   //是否是負數
 	string numA, numB;
-	numA = negativeA ? this->value.substr(1) : this->value;   //去掉負號
-	numB = negativeB ? num.value.substr(1) : num.value;   //去掉負號
+	numA = this->value;
+	numB = num.value;
 
-	if ((negativeA ^ negativeB) == false) {   //同號
+	if (!this->positive == !num.positive) {   //同號
 		if (numA.size() < numB.size())
 			numA.insert(numA.begin(), numB.size() - numA.size(), '0');   //補0
 		else if(numA.size() > numB.size())
@@ -200,17 +248,17 @@ const string Integer::operator+(const Integer& num) const
 			numA[i] += numB[i] + over - 48;
 			over = false;
 			if (numA[i] > '9') {
-				over = true;
+				over = 1;
 				numA[i] -= 10;
 			}
 		}
 		if (over)
 			numA.insert(numA.begin(), '1');
-		if (negativeA)
+		if (!positive)
 			numA.insert(numA.begin(), '-');
 		return numA;
 	}
-	else if (!negativeA) {   //A+(-B)
+	else if (positive) {   //A+(-B)
 		return *this - Integer(numB);
 	}
 	else {   //(-A)+B
@@ -220,14 +268,12 @@ const string Integer::operator+(const Integer& num) const
 
 const string Integer::operator-(const Integer& num) const
 {
-	bool negativeA = this->value[0] == '-' ? true : false;   //是否是負數
-	bool negativeB = num.value[0] == '-' ? true : false;   //是否是負數
 	string numA, numB;
-	numA = negativeA ? this->value.substr(1) : this->value;   //去掉負號
-	numB = negativeB ? num.value.substr(1) : num.value;   //去掉負號
+	numA = this->value;
+	numB = num.value;
 
-	if ((negativeA ^ negativeB) == false) {   //同號
-		if (negativeA)   //(-A)-(-B)
+	if (!this->positive == !num.positive) {   //同號
+		if (!positive)   //(-A)-(-B)
 			numA.swap(numB);   //改成B-A
 		if (numA.size() < numB.size())
 			numA.insert(numA.begin(), numB.size() - numA.size(), '0');   //補0
@@ -235,7 +281,7 @@ const string Integer::operator-(const Integer& num) const
 			numB.insert(numB.begin(), numA.size() - numB.size(), '0');   //補0
 		bool inverse;
 		if (numA < numB) {   //A < B
-			inverse = true;
+			inverse = 1;
 			numA.swap(numB);
 		}
 		else   //A > B
@@ -270,7 +316,7 @@ const string Integer::operator-(const Integer& num) const
 		else
 			return numA;
 	}
-	else if (!negativeA) {   //A-(-B)
+	else if (positive) {   //A-(-B)
 		return *this + Integer(numB);
 	}
 	else {   //(-A)-B
@@ -280,6 +326,6 @@ const string Integer::operator-(const Integer& num) const
 
 ostream& operator<<(ostream& outputStream, Integer& numObj)
 {
-	cout << numObj.value;
+	cout << (numObj.positive ? numObj.value : "-" + numObj.value);
 	return outputStream;
 }

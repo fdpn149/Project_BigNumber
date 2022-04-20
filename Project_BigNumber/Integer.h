@@ -2,16 +2,19 @@
 #include <sstream>
 #include <vector>
 #include <cctype>
+#include <map>
 using namespace std;
 class Integer
 {
 	string value;
+	bool positive;
 	int find_rparenthesis(string str);   //§ä¥k¬A¸¹ªº¦ì¸m
 	void process(string str);
 	string calculate(string input);
 	string split_calculate(vector<string> &number, vector<char> &symbol);
 	bool isAllDigit(string input);
 public:
+	Integer();
 	Integer(const string str);
 	Integer(const char* str);
 	const string operator!() const;   //¶¥­¼
