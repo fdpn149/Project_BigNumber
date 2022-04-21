@@ -36,7 +36,7 @@ string Integer::calculate(string input)
 			ss.str(input);   //更改ss的值
 			ss.seekg(ss_loc + result.length()-1);   //將ss指的位置設回來
 		}
-		else if (now_str[0] == '+' && now_str[1] == '(') {   //正括號
+		else if (now_str[0] == '+' && now_str[1] == '(') {   //正 括號
 			int ss_loc = ss.tellg();
 			int len = find_rparenthesis(input.substr(ss_loc + 1));   //找括號所括的長度
 			string result = calculate(input.substr(ss_loc + 1, len + 2));
@@ -45,7 +45,7 @@ string Integer::calculate(string input)
 			ss.str(input);   //更改ss的值
 			ss.seekg(ss_loc + result.length()-1);   //將ss指的位置設回來
 		}
-		else if (now_str[0] == '-' && now_str[1] == '(') {   //負括號
+		else if (now_str[0] == '-' && now_str[1] == '(') {   //負 括號
 			int ss_loc = ss.tellg();
 			int len = find_rparenthesis(input.substr(ss_loc + 1));   //找括號所括的長度
 			string result = '-' + calculate(input.substr(ss_loc + 1, len + 2));
@@ -212,6 +212,11 @@ const string Integer::operator*(const Integer& num) const
 
 const string Integer::operator/(const Integer& num) const
 {
+	if (num.value == "0") {
+		cout << "除數不能為";
+		return "0";
+	}
+	
 	map<int, Integer> products;
 	products[1] = num;
 	products[2] = products[1] + products[1];
@@ -223,13 +228,39 @@ const string Integer::operator/(const Integer& num) const
 	products[8] = products[4] + products[4];
 	products[9] = products[4] + products[5];
 	products[10] = products[5] + products[5];
-	string originNum = value;
-	string nowNum = originNum.substr(0, num.value.size());
-	int i = 1;
-	while (products[i].value <= nowNum && products[i].value.length() == nowNum.length()) {
 
+	Integer a;
+	string originNum = value;
+	string lastNum;
+	string nowNum = originNum.substr(0, num.value.length()-1);
+	string quotient = "0";
+	string compare;
+	for (int i = 0; i <= (int)value.length() - (int)num.value.length(); i++) {
+		nowNum.append(to_string(originNum[num.value.size() + i-1] - '0'));
+		int j = 1;
+		lastNum = "0";
+		compare = products[j].value;
+		if (compare.length() < nowNum.length())
+			compare.insert(0, 1, '0');
+		while (compare.length() == nowNum.length() && compare <= nowNum) {
+			lastNum = compare;
+			j++;
+			compare = products[j].value;
+			if (compare.length() < nowNum.length())
+				compare.insert(0, 1, '0');
+		}
+		a = Integer(nowNum) - lastNum;
+		j--;
+		quotient.append(to_string(j));
+		nowNum = a.value;
 	}
-	return "";
+	while(quotient.length() > 1 && quotient[0] == '0')
+		quotient.erase(quotient.begin());
+
+	if (!positive == !num.positive)
+		return quotient;
+	else
+		return '-' + quotient;
 }
 
 const string Integer::operator+(const Integer& num) const
