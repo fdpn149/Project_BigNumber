@@ -3,6 +3,7 @@
 #include <cctype>
 #include <sstream>
 #include <vector>
+#include "NumberObject.h"
 #include "Decimal.h"
 #include "Integer.h"
 using namespace std;
@@ -15,55 +16,13 @@ struct Variable {
 
 vector<Variable> variable = { {"abc", "Decimal", "3.14"}, {"defg","Integer","98"}, {"hij", "Decimal", "3.14"} };
 
-bool areExistedVariable(string input)
-{
-	stringstream ss(input);
-	string str;
-	while (ss >> str) {
-		if (isalpha(str[0])) {
-			bool exist = false;
-			for (Variable v : variable) {
-				if (v.name == str) {
-					exist = true;
-					break;
-				}
-			}
-			if (!exist)
-				return false;
-		}
-	}
-	return true;
-}
-
-bool isDecimal(string input)
-{
-	if (find(input.begin(), input.end(), '.') != input.end()) {   //计
-		return true;
-	}
-	else {
-		stringstream ss(input);
-		string str;
-		while (ss >> str) {
-			if (isalpha(str[0])) {
-				for (int i = 0; i < variable.size(); i++) {
-					if (str == variable[i].name) {
-						if (variable[i].type == "Decimal")   //计
-							return true;
-					}
-				}
-			}
-		}
-		return false;   //俱计
-	}
-}
-
-
+bool areExistedVariable(string input);
+bool isDecimal(string input);
 
 int main()
 {
 	char firstChar;
 	string input;
-
 	while (firstChar = cin.peek()) {
 		getline(cin, input);
 		if (firstChar == 'S') {   //琌跑计┪Set
@@ -113,3 +72,44 @@ int main()
 	}
 }
 
+bool areExistedVariable(string input)
+{
+	stringstream ss(input);
+	string str;
+	while (ss >> str) {
+		if (isalpha(str[0])) {
+			bool exist = false;
+			for (Variable v : variable) {
+				if (v.name == str) {
+					exist = true;
+					break;
+				}
+			}
+			if (!exist)
+				return false;
+		}
+	}
+	return true;
+}
+
+bool isDecimal(string input)
+{
+	if (find(input.begin(), input.end(), '.') != input.end()) {   //计
+		return true;
+	}
+	else {
+		stringstream ss(input);
+		string str;
+		while (ss >> str) {
+			if (isalpha(str[0])) {
+				for (int i = 0; i < variable.size(); i++) {
+					if (str == variable[i].name) {
+						if (variable[i].type == "Decimal")   //计
+							return true;
+					}
+				}
+			}
+		}
+		return false;   //俱计
+	}
+}

@@ -1,24 +1,5 @@
+#include "NumberObject.h"
 #include "Integer.h"
-
-int Integer::find_rparenthesis(string str)   //找右括號的位置
-{
-	int count = 1;
-	for (int i = 1; i < str.length(); i++) {
-		if (str[i] == '(')
-			count++;
-		else if (str[i] == ')')
-			count--;
-		if (count == 0) {
-			return i - 3;
-		}
-	}
-	return -1;   //找不到
-}
-
-void Integer::process(string str)
-{
-	value = calculate(str);
-}
 
 string Integer::calculate(string input)
 {
@@ -138,31 +119,17 @@ string Integer::split_calculate(vector<string> &number, vector<char> &symbol)
 	return number[0];
 }
 
-bool Integer::isAllDigit(string input)
+Integer::Integer() : NumberObject()
 {
-	for (int i = input[0] == '-' ? 1 : 0; i < input.length(); i++) {
-		if (!isdigit(input[i]))
-			return false;
-	}
-	return true;
 }
 
-
-
-Integer::Integer()
+Integer::Integer(const string str) : NumberObject(str)
 {
-	value = "0";
-}
-
-Integer::Integer(const string str)
-{
-	value = str;
-
 	positive = value[0] == '-' ? false : true;   //是否是負數
 	value = positive ? value : value.substr(1);   //去掉負號
 }
 
-Integer::Integer(const char* str)
+Integer::Integer(const char* str) : NumberObject()
 {
 	if (isAllDigit(str))
 		value = str;

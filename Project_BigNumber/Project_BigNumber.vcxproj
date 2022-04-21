@@ -142,10 +142,12 @@
     <ClCompile Include="Decimal.cpp" />
     <ClCompile Include="Integer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="NumberObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Decimal.h" />
     <ClInclude Include="Integer.h" />
+    <ClInclude Include="NumberObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
