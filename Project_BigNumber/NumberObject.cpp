@@ -2,19 +2,22 @@
 
 NumberObject::NumberObject()
 {
-	value = "0";
+	fract.numerator = "0";
+	fract.denominator = "1";
 	positive = true;
 }
 
 NumberObject::NumberObject(string str)
 {
-	value = str;
+	fract.numerator = str;
+	fract.denominator = "1";
 	positive = true;
 }
 
 NumberObject::NumberObject(string str, bool pos)
 {
-	value = str;
+	fract.numerator = str;
+	fract.denominator = "1";
 	positive = pos;
 }
 
@@ -33,11 +36,12 @@ int NumberObject::find_rparenthesis(string str)   //找右括號的位置
 	return -1;   //找不到
 }
 
-bool NumberObject::isAllDigit(string input)
+int NumberObject::getNumeratorSize()
 {
-	for (int i = input[0] == '-' ? 1 : 0; i < input.length(); i++) {
-		if (!isdigit(input[i]))
-			return false;
-	}
-	return true;
+	return fract.numerator.size();
+}
+
+int NumberObject::getDenominatorSize()
+{
+	return fract.denominator.size();
 }

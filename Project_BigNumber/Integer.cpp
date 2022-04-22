@@ -59,7 +59,7 @@ string Integer::split_calculate(vector<string> &number, vector<char> &symbol)
 	for (int i = 0; i < symbol.size(); i++) {
 		if (symbol[i] == '!') {   //璝笿顶
 			Integer num = number[i];
-			number[i] = !num;
+			number[i] = (!num).tostring();
 			symbol.erase(symbol.begin() + i);
 			i--;
 		}
@@ -70,7 +70,7 @@ string Integer::split_calculate(vector<string> &number, vector<char> &symbol)
 		if (symbol[i] == '^') {   //璝笿Ωよ
 			Integer num1 = number[i];
 			Integer num2 = number[i + 1];
-			number[i] = num1 ^ num2;
+			number[i] = (num1 ^ num2).tostring();
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
 			i--;
@@ -81,7 +81,7 @@ string Integer::split_calculate(vector<string> &number, vector<char> &symbol)
 		if (symbol[i] == '*') {   //璝笿
 			Integer num1 = number[i];
 			Integer num2 = number[i + 1];
-			number[i] = num1 * num2;
+			number[i] = (num1 * num2).tostring();
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
 			i--;
@@ -90,7 +90,7 @@ string Integer::split_calculate(vector<string> &number, vector<char> &symbol)
 		if (symbol[i] == '/') {   //璝笿埃
 			Integer num1 = number[i];
 			Integer num2 = number[i + 1];
-			number[i] = num1 / num2;
+			number[i] = (num1 / num2).tostring();
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
 			i--;
@@ -101,7 +101,7 @@ string Integer::split_calculate(vector<string> &number, vector<char> &symbol)
 		if (symbol[i] == '+') {   //璝笿
 			Integer num1 = number[i];
 			Integer num2 = number[i + 1];
-			number[i] = num1 + num2;
+			number[i] = (num1 + num2).tostring();
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
 			i--;
@@ -110,7 +110,7 @@ string Integer::split_calculate(vector<string> &number, vector<char> &symbol)
 		if (symbol[i] == '-') {   //璝笿搭
 			Integer num1 = number[i];
 			Integer num2 = number[i + 1];
-			number[i] = num1 - num2;
+			number[i] = (num1 - num2).tostring();
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
 			i--;
@@ -119,38 +119,65 @@ string Integer::split_calculate(vector<string> &number, vector<char> &symbol)
 	return number[0];
 }
 
+bool Integer::isAllDigit(string input)
+{
+	for (int i = input[0] == '-' ? 1 : 0; i < input.length(); i++) {
+		if (!isdigit(input[i]))
+			return false;
+	}
+	return true;
+}
+
 Integer::Integer() : NumberObject()
 {
+	dec = false;
 }
 
 Integer::Integer(const string str) : NumberObject(str)
 {
-	positive = value[0] == '-' ? false : true;   //琌琌璽计
-	value = positive ? value : value.substr(1);   //奔璽腹
+	positive = fract.numerator[0] == '-' ? false : true;   //琌琌璽计
+	fract.numerator = positive ? fract.numerator : fract.numerator.substr(1);   //奔璽腹
+	dec = false;
 }
 
 Integer::Integer(const char* str) : NumberObject()
 {
 	if (isAllDigit(str))
-		value = str;
+		fract.numerator = str;
 	else
-		value = calculate(str);
+		fract.numerator = calculate(str);
 
-	positive = value[0] == '-' ? false : true;   //琌琌璽计
-	value = positive ? value : value.substr(1);   //奔璽腹
+	positive = fract.numerator[0] == '-' ? false : true;   //琌琌璽计
+	fract.numerator = positive ? fract.numerator : fract.numerator.substr(1);   //奔璽腹
+	dec = false;
 }
 
-const string Integer::operator!() const
+const Integer Integer::operator!() const
 {
 	return "9191";
 }
 
-const string Integer::operator^(const Integer& num) const
+const Integer Integer::operator^(const Integer& num) const
 {
 	return "7474";
 }
 
-const string Integer::operator*(const Integer& num) const
+const Integer Integer::operator%(const Integer& num) const
+{
+	string as = this->tostring();
+	string bs = num.tostring();
+	if (as.length() < bs.length())
+		as.insert(as.begin(), bs.length() - as.length(), '0');   //干0
+	if (as.length() > bs.length())
+		bs.insert(bs.begin(), as.length() - bs.length(), '0');   //干0
+	if (bs > as)
+		return *this;
+
+	Integer a = *this / num;
+	return *this - (num * a);
+}
+
+const Integer Integer::operator*(const Integer& num) const
 {
 	map<int, Integer> products;
 	products[0] = Integer();
@@ -165,21 +192,24 @@ const string Integer::operator*(const Integer& num) const
 	products[9] = products[4] + products[5];
 	Integer sum;
 	int digit = 0;
-	for (int i = num.value.length() - 1; i >= 0; i--) {
-		Integer b = products[num.value.at(i) - '0'];
-		b.value.append(digit, '0');
+	for (int i = num.fract.numerator.length() - 1; i >= 0; i--) {
+		Integer b = products[num.fract.numerator.at(i) - '0'];
+		b.fract.numerator.append(digit, '0');
 		sum = sum + b;
 		digit++;
 	}
+
+
 	if(!positive == !num.positive)
-		return sum.value;
-	else
-		return '-' + sum.value;
+		return sum;
+	
+	sum.positive = false;
+	return sum;
 }
 
-const string Integer::operator/(const Integer& num) const
+const Integer Integer::operator/(const Integer& num) const
 {
-	if (num.value == "0") {
+	if (num.fract.numerator == "0") {
 		cout << "埃计ぃ";
 		return "0";
 	}
@@ -197,133 +227,157 @@ const string Integer::operator/(const Integer& num) const
 	products[10] = products[5] + products[5];
 
 	Integer a;
-	string originNum = value;
+	string originNum = fract.numerator;
 	string lastNum;
-	string nowNum = originNum.substr(0, num.value.length()-1);
+	string nowNum = originNum.substr(0, num.fract.numerator.length()-1);
 	string quotient = "0";
 	string compare;
-	for (int i = 0; i <= (int)value.length() - (int)num.value.length(); i++) {
-		nowNum.append(to_string(originNum[num.value.size() + i-1] - '0'));
+	for (int i = 0; i <= (int)fract.numerator.length() - (int)num.fract.numerator.length(); i++) {
+		nowNum.append(to_string(originNum[num.fract.numerator.size() + i-1] - '0'));
 		int j = 1;
 		lastNum = "0";
-		compare = products[j].value;
+		compare = products[j].fract.numerator;
 		if (compare.length() < nowNum.length())
 			compare.insert(0, 1, '0');
 		while (compare.length() == nowNum.length() && compare <= nowNum) {
 			lastNum = compare;
 			j++;
-			compare = products[j].value;
+			compare = products[j].fract.numerator;
 			if (compare.length() < nowNum.length())
 				compare.insert(0, 1, '0');
 		}
 		a = Integer(nowNum) - lastNum;
 		j--;
 		quotient.append(to_string(j));
-		nowNum = a.value;
+		nowNum = a.fract.numerator;
 	}
 	while(quotient.length() > 1 && quotient[0] == '0')
 		quotient.erase(quotient.begin());
 
+	a.fract.numerator = quotient;
+	a.positive = true;
 	if (!positive == !num.positive)
-		return quotient;
-	else
-		return '-' + quotient;
+		return a;
+
+	a.positive = false;
+	return a;
 }
 
-const string Integer::operator+(const Integer& num) const
+const Integer Integer::operator+(const Integer& num) const
 {
-	string numA, numB;
-	numA = this->value;
-	numB = num.value;
+	Integer numA, numB;
+	numA = *this;
+	numB = num;
 
 	if (!this->positive == !num.positive) {   //腹
-		if (numA.size() < numB.size())
-			numA.insert(numA.begin(), numB.size() - numA.size(), '0');   //干0
-		else if(numA.size() > numB.size())
-			numB.insert(numB.begin(), numA.size() - numB.size(), '0');   //干0
+		if (numA.getNumeratorSize() < numB.getNumeratorSize())
+			numA.fract.numerator.insert(numA.fract.numerator.begin(), numB.getNumeratorSize() - numA.getNumeratorSize(), '0');   //干0
+		else if(numA.getNumeratorSize() > numB.getNumeratorSize())
+			numB.fract.numerator.insert(numB.fract.numerator.begin(), numA.getNumeratorSize() - numB.getNumeratorSize(), '0');   //干0
 		bool over = false;   //秈
-		for (int i = numA.size() - 1; i >= 0; i--) {
-			numA[i] += numB[i] + over - 48;
+		for (int i = numA.getNumeratorSize() - 1; i >= 0; i--) {
+			numA.fract.numerator[i] += numB.fract.numerator[i] + over - 48;
 			over = false;
-			if (numA[i] > '9') {
+			if (numA.fract.numerator[i] > '9') {
 				over = 1;
-				numA[i] -= 10;
+				numA.fract.numerator[i] -= 10;
 			}
 		}
 		if (over)
-			numA.insert(numA.begin(), '1');
-		if (!positive)
-			numA.insert(numA.begin(), '-');
+			numA.fract.numerator.insert(numA.fract.numerator.begin(), '1');
+
 		return numA;
 	}
 	else if (positive) {   //A+(-B)
-		return *this - Integer(numB);
+		numB.positive = true;
+		return numA - numB;
 	}
 	else {   //(-A)+B
-		return num - Integer(numA);
+		numA.positive = true;
+		return numB - numA;
 	}
 }
 
-const string Integer::operator-(const Integer& num) const
+const Integer Integer::operator-(const Integer& num) const
 {
-	string numA, numB;
-	numA = this->value;
-	numB = num.value;
+	Integer numA, numB;
+	numA = *this;
+	numB = num;
 
 	if (!this->positive == !num.positive) {   //腹
 		if (!positive)   //(-A)-(-B)
-			numA.swap(numB);   //эΘB-A
-		if (numA.size() < numB.size())
-			numA.insert(numA.begin(), numB.size() - numA.size(), '0');   //干0
-		else if (numA.size() > numB.size())
-			numB.insert(numB.begin(), numA.size() - numB.size(), '0');   //干0
+			numA.fract.numerator.swap(numB.fract.numerator);   //эΘB-A
+
+		if (numA.getNumeratorSize() < numB.getNumeratorSize())
+			numA.fract.numerator.insert(numA.fract.numerator.begin(), numB.getNumeratorSize() - numA.getNumeratorSize(), '0');   //干0
+		else if (numA.getNumeratorSize() > numB.getNumeratorSize())
+			numB.fract.numerator.insert(numB.fract.numerator.begin(), numA.getNumeratorSize() - numB.getNumeratorSize(), '0');   //干0
 		bool inverse;
-		if (numA < numB) {   //A < B
+		if (numA.fract.numerator < numB.fract.numerator) {   //A < B
 			inverse = 1;
-			numA.swap(numB);
+			numA.fract.numerator.swap(numB.fract.numerator);
 		}
 		else   //A > B
 			inverse = false;
 
-		for (int i = 0; i < numA.size(); i++) {
-			numA[i] -= numB[i] - '0';
-			if (numA[i] < '0') {
+		for (int i = 0; i < numA.getNumeratorSize(); i++) {
+			numA.fract.numerator[i] -= numB.fract.numerator[i] - '0';
+			if (numA.fract.numerator[i] < '0') {
 				for (int j = i; j >= 1; j--) {
-					numA[j] += 10;
-					numA[j - 1] -= 1;
-					if (numA[j - 1] >= '0')
+					numA.fract.numerator[j] += 10;
+					numA.fract.numerator[j - 1] -= 1;
+					if (numA.fract.numerator[j - 1] >= '0')
 						break;
 				}
 			}
 		}
 
-		for (int i = 0; i < numA.size(); i++) {
-			if (numA[i] == '0') {
-				numA.erase(numA.begin() + i);
+		for (int i = 0; i < numA.getNumeratorSize(); i++) {
+			if (numA.fract.numerator[i] == '0') {
+				numA.fract.numerator.erase(numA.fract.numerator.begin() + i);
 				i--;
 			}
 			else
 				break;
 		}
 
-		if (numA.size() == 0)
+		if (numA.getNumeratorSize() == 0)
 			numA = "0";
 
 		if (inverse)
-			return '-' + numA;
+			numA.positive = false;
 		else
+			numA.positive = true;
+
 			return numA;
 	}
 	else if (positive) {   //A-(-B)
-		return *this + Integer(numB);
+		return numA + numB;
 	}
 	else {   //(-A)-B
-		return '-' + (num + Integer(numA));
+		numA.positive = true;
+		numA = numA + numB;
+		numA.positive = false;
+		return numA;
 	}
+}
+
+void Integer::operator=(const Integer& num)
+{
+	this->fract = num.fract;
+	this->positive = num.positive;
+}
+
+const string Integer::tostring() const
+{
+	if (positive)
+		return fract.numerator;
+	else
+		return '-' + fract.numerator;
 }
 
 ostream& operator<<(ostream& outputStream, Integer& numObj)
 {
-	cout << (numObj.positive ? numObj.value : "-" + numObj.value);
+	cout << (numObj.positive ? numObj.fract.numerator : "-" + numObj.fract.numerator);
 	return outputStream;
 }

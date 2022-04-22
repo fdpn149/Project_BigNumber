@@ -1,12 +1,6 @@
-#include <iostream>
-#include <string>
-#include <cctype>
-#include <sstream>
-#include <vector>
 #include "NumberObject.h"
 #include "Decimal.h"
 #include "Integer.h"
-using namespace std;
 
 struct Variable {
 	string name;
