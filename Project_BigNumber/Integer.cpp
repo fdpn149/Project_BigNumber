@@ -1,6 +1,6 @@
 #include "NumberObject.h"
 #include "Integer.h"
-//ffffff
+
 string Integer::calculate(string input)
 {
 	stringstream ss(input);
@@ -53,7 +53,28 @@ string Integer::calculate(string input)
 
 string Integer::split_calculate(vector<string> &number, vector<char> &symbol)
 {
-	/*(一堆負號的處理)*/
+	//(一堆負號的處理)
+	for (int i = 0; i < number.size(); i++)
+	{
+		int count = 0;
+		for (int j = 0; j < number[i].size(); j++)
+		{
+			if (number[i][j] == '-')
+				count++;
+			else
+				break;
+		}
+		if (count % 2 == 0)
+		{
+			for (int j = 0; j < count; j++)
+				number[i].erase(number[i].begin());
+		}
+		else
+		{
+			for (int j = 0; j < count - 1; j++)
+				number[i].erase(number[i].begin());
+		}
+	}
 
 	//階乘計算
 	for (int i = 0; i < symbol.size(); i++) {
