@@ -1,6 +1,6 @@
 #include "NumberObject.h"
 #include "Integer.h"
-
+//ffffff
 string Integer::calculate(string input)
 {
 	stringstream ss(input);
