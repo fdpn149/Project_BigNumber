@@ -399,6 +399,16 @@ const bool Integer::operator<(const Integer& num) const
 		return this->fract.numerator < num.fract.numerator;
 }
 
+const bool Integer::operator<=(const Integer& num) const
+{
+	if (this->getNumeratorSize() < num.getNumeratorSize())
+		return 1;
+	else if (this->getNumeratorSize() > num.getNumeratorSize())
+		return 0;
+	else
+		return this->fract.numerator <= num.fract.numerator;
+}
+
 const string Integer::tostring() const
 {
 	if (positive)

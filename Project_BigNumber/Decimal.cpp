@@ -173,8 +173,11 @@ void Decimal::toIrreducible(fraction& f) const
 {
 	if (f.denominator == "1")
 		return;
-	if (count(f.numerator.begin(), f.numerator.end(), '0') == f.numerator.length()) {
-		f.numerator = "0";
+
+	while (f.numerator[0] == '0' && f.numerator.length() > 1)   //清開頭的0
+		f.numerator.erase(0, 1);
+
+	if (f.numerator == "0") {
 		f.denominator = "1";
 		return;
 	}
@@ -198,27 +201,63 @@ const Integer Decimal::gcd(Integer a, Integer b) const
 	return a;
 }
 
-const Integer Decimal::lcm(Integer a, Integer b) const
+const string Decimal::findExactlyValue()
 {
-	Integer c;
-	Integer r;
-	if (a > b) {
-		c = a;
-		r = c % b;
-		while (r.tostring() != "0") {
-			c = c + a;
-			r = c % b;
-		}
+	string denominator = this->fract.denominator;
+	string numerator = this->fract.numerator;
+
+	Integer num = denominator;
+
+	map<int, Integer> products;
+	products[0] = "0";
+	products[1] = num;
+	products[2] = products[1] + products[1];
+	products[3] = products[1] + products[2];
+	products[4] = products[2] + products[2];
+	products[5] = products[2] + products[3];
+	products[6] = products[3] + products[3];
+	products[7] = products[3] + products[4];
+	products[8] = products[4] + products[4];
+	products[9] = products[4] + products[5];
+	products[10] = products[5] + products[5];
+
+	int dot;
+	int pos = denominator.length() - 1;
+	int times;
+	string quotient;
+	Integer remainder;
+	if (numerator.length() < denominator.length()) {   //如果分母的位數多於分子
+		dot = 1;   //小數點設在第1位
+		remainder = numerator;
+		remainder.fract.numerator.append(denominator.length() - numerator.length(), '0');
+		quotient.append(denominator.length() - 1, '0');
 	}
 	else {
-		c = b;
-		r = c % a;
-		while (r.tostring() != "0") {
-			c = c + b;
-			r = c % a;
-		}
+		remainder = numerator.substr(0, denominator.length());
+		dot = numerator.length() - denominator.length() + 1;   //小數點位置
 	}
-	return c;
+	for(int i = 0; i <= 100 - denominator.length() + numerator.length(); i++){
+		int n = 1;
+		while (products[n] <= remainder)
+			n++;
+		n--;
+		quotient.append(to_string(n));
+		remainder = remainder - products[n];
+		if (remainder.fract.numerator == "0")   //除完了
+			break;
+		pos++;
+		if (pos < numerator.length())
+			remainder.fract.numerator.append(string(1, numerator[pos]));
+		else
+			remainder.fract.numerator.append("0");
+	}
+	quotient.insert(dot, ".");
+	while (quotient[0] == '0' && quotient[1] != '.')   //清開頭的0
+		quotient.erase(0, 1);
+
+	if(99 - pos + dot > 0)
+		quotient.append(99 - pos + dot, '0');
+	return quotient;
 }
 
 Decimal::Decimal() : NumberObject()
@@ -387,6 +426,6 @@ const Decimal Decimal::operator-(const Decimal& num) const
 
 ostream& operator<<(ostream& outputStream, Decimal& numObj)
 {
-	cout << (numObj.positive ? "" : "-") << numObj.fract.numerator << "/" << numObj.fract.denominator;
+	cout << (numObj.positive ? "" : "-") << numObj.findExactlyValue();
 	return outputStream;
 }

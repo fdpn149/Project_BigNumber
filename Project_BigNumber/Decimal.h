@@ -11,6 +11,7 @@ class Decimal : public NumberObject
 	void toIrreducible(fraction& f) const;
 	const Integer gcd(Integer a, Integer b) const;
 	const Integer lcm(Integer a, Integer b) const;
+	const string findExactlyValue();
 public:
 	Decimal();
 	Decimal(const string str);
