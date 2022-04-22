@@ -236,15 +236,21 @@ const string Decimal::findExactlyValue()
 		remainder = numerator.substr(0, denominator.length());
 		dot = numerator.length() - denominator.length() + 1;   //小數點位置
 	}
-	for(int i = 0; i <= 100 - denominator.length() + numerator.length(); i++){
+	int i;
+	for(i = 0; i <= 100 - denominator.length() + numerator.length(); i++){
 		int n = 1;
 		while (products[n] <= remainder)
 			n++;
 		n--;
 		quotient.append(to_string(n));
 		remainder = remainder - products[n];
-		if (remainder.fract.numerator == "0")   //除完了
+
+		if (remainder.fract.numerator == "0" && pos >= numerator.length())   //除完了
 			break;
+
+		if (remainder.fract.numerator[0] == '0')   //清開頭的0
+			remainder.fract.numerator.erase(0, 1);
+
 		pos++;
 		if (pos < numerator.length())
 			remainder.fract.numerator.append(string(1, numerator[pos]));
@@ -255,8 +261,8 @@ const string Decimal::findExactlyValue()
 	while (quotient[0] == '0' && quotient[1] != '.')   //清開頭的0
 		quotient.erase(0, 1);
 
-	if(99 - pos + dot > 0)
-		quotient.append(99 - pos + dot, '0');
+	if(99 - i + dot > 0)
+		quotient.append(99 - i + dot, '0');
 	return quotient;
 }
 
