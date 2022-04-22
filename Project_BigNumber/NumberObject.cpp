@@ -36,12 +36,12 @@ int NumberObject::find_rparenthesis(string str)   //找右括號的位置
 	return -1;   //找不到
 }
 
-int NumberObject::getNumeratorSize()
+const int NumberObject::getNumeratorSize() const
 {
 	return fract.numerator.size();
 }
 
-int NumberObject::getDenominatorSize()
+const int NumberObject::getDenominatorSize() const
 {
 	return fract.denominator.size();
 }

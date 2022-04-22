@@ -152,6 +152,12 @@ Integer::Integer(const char* str) : NumberObject()
 	dec = false;
 }
 
+Integer::Integer(const Integer& cp)
+{
+	this->fract = cp.fract;
+	this->positive = cp.positive;
+}
+
 const Integer Integer::operator!() const
 {
 	return "9191";
@@ -366,6 +372,31 @@ void Integer::operator=(const Integer& num)
 {
 	this->fract = num.fract;
 	this->positive = num.positive;
+}
+
+const bool Integer::operator==(const Integer& num) const
+{
+	return this->fract.numerator == num.fract.numerator;
+}
+
+const bool Integer::operator>(const Integer& num) const
+{
+	if (this->getNumeratorSize() > num.getNumeratorSize())
+		return 1;
+	else if (this->getNumeratorSize() < num.getNumeratorSize())
+		return 0;
+	else
+		return this->fract.numerator > num.fract.numerator;
+}
+
+const bool Integer::operator<(const Integer& num) const
+{
+	if (this->getNumeratorSize() < num.getNumeratorSize())
+		return 1;
+	else if (this->getNumeratorSize() > num.getNumeratorSize())
+		return 0;
+	else
+		return this->fract.numerator < num.fract.numerator;
 }
 
 const string Integer::tostring() const

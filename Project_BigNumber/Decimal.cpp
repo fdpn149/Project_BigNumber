@@ -2,14 +2,128 @@
 #include "Decimal.h"
 #include "Integer.h"
 
-fraction Decimal::calculate(string str)
+Decimal Decimal::calculate(string input)
 {
-	return fraction();
+	stringstream ss(input);
+	string now_str;
+	vector<char> symbol;   //存符號
+	vector<Decimal> number;   //存數字
+	while (ss >> now_str) {
+		if (now_str[0] == '(') {   //括號
+			int ss_loc = ss.tellg();   //ss現在指到的位置
+			int len = find_rparenthesis(input.substr(ss_loc - 1));   //找括號所括的長度
+			Decimal result_d = calculate(input.substr(ss_loc + 1, len));   //括號中的運算結果
+			string result = "(" + result_d.fract.numerator + "/" + result_d.fract.denominator + ")";   //轉成分數
+			number.push_back(result_d);   //存數字
+			input.replace(ss_loc - 1, len + 4, result);   //將括號替換成結果
+			ss.str(input);   //更改ss的值
+			ss.seekg(ss_loc + result.length() - 1);   //將ss指的位置設回來
+		}
+		else if (now_str[0] == '+' && now_str[1] == '(') {   //正 括號
+			int ss_loc = ss.tellg();
+			int len = find_rparenthesis(input.substr(ss_loc + 1));   //找括號所括的長度
+			Decimal result_d = calculate(input.substr(ss_loc + 1, len + 2));   //括號中的運算結果
+			string result = "(" + result_d.fract.numerator + "/" + result_d.fract.denominator + ")";   //轉成分數
+			number.push_back(result_d);   //存數字
+			input.replace(ss_loc - 2, len + 7, result);   //將括號替換成結果
+			ss.str(input);   //更改ss的值
+			ss.seekg(ss_loc + result.length() - 1);   //將ss指的位置設回來
+		}
+		else if (now_str[0] == '-' && now_str[1] == '(') {   //負 括號
+			int ss_loc = ss.tellg();
+			int len = find_rparenthesis(input.substr(ss_loc + 1));   //找括號所括的長度
+			Decimal result_d = calculate(input.substr(ss_loc + 1, len + 2));   //括號中的運算結果
+			result_d.positive = false;   //設成負
+			string result = "-(" + result_d.fract.numerator + "/" + result_d.fract.denominator + ")";   //轉成分數
+			number.push_back(result_d);   //存數字
+			input.replace(ss_loc - 2, len + 7, result);   //將括號替換成結果
+			ss.str(input);   //更改ss的值
+			ss.seekg(ss_loc + result.length() - 1);   //將ss指的位置設回來
+		}
+		else if (isalpha(now_str[0])) {   //變數
+
+		}
+		else if (isdigit(now_str[0])) {   //小數
+			Decimal d = now_str;
+			number.push_back(d);
+		}
+		else if ((now_str[0] == '+' || now_str[0] == '-') && now_str.length() > 1) {   //正負數
+			Decimal d = now_str;
+			number.push_back(d);
+		}
+		else {   //符號
+			symbol.push_back(now_str[0]);
+		}
+	}
+	return split_calculate(number, symbol);
 }
 
-fraction Decimal::split_calculate(vector<fraction>& number, vector<char>& symbol)
+Decimal Decimal::split_calculate(vector<Decimal>& number, vector<char>& symbol)
 {
-	return fraction();
+	/*(一堆負號的處理)*/
+
+	//階乘計算
+	for (int i = 0; i < symbol.size(); i++) {
+		if (symbol[i] == '!') {   //若遇到階乘
+			Decimal num = number[i];
+			number[i] = !num;
+			symbol.erase(symbol.begin() + i);
+			i--;
+		}
+	}
+
+	//次方運算
+	for (int i = 0; i < symbol.size(); i++) {
+		if (symbol[i] == '^') {   //若遇到次方
+			Decimal num1 = number[i];
+			Decimal num2 = number[i + 1];
+			number[i] = num1 ^ num2;
+			number.erase(number.begin() + i + 1);
+			symbol.erase(symbol.begin() + i);
+			i--;
+		}
+	}
+
+	for (int i = 0; i < symbol.size(); i++) {
+		if (symbol[i] == '*') {   //若遇到乘
+			Decimal num1 = number[i];
+			Decimal num2 = number[i + 1];
+			number[i] = num1 * num2;
+			number.erase(number.begin() + i + 1);
+			symbol.erase(symbol.begin() + i);
+			i--;
+			continue;
+		}
+		if (symbol[i] == '/') {   //若遇到除
+			Decimal num1 = number[i];
+			Decimal num2 = number[i + 1];
+			number[i] = num1 / num2;
+			number.erase(number.begin() + i + 1);
+			symbol.erase(symbol.begin() + i);
+			i--;
+		}
+	}
+
+	for (int i = 0; i < symbol.size(); i++) {
+		if (symbol[i] == '+') {   //若遇到加
+			Decimal num1 = number[i];
+			Decimal num2 = number[i + 1];
+			number[i] = num1 + num2;
+			number.erase(number.begin() + i + 1);
+			symbol.erase(symbol.begin() + i);
+			i--;
+			continue;
+		}
+		if (symbol[i] == '-') {   //若遇到減
+			Decimal num1 = number[i];
+			Decimal num2 = number[i + 1];
+			number[i] = num1 - num2;
+			number.erase(number.begin() + i + 1);
+			symbol.erase(symbol.begin() + i);
+			i--;
+		}
+	}
+	return number[0];
 }
 
 bool Decimal::isPureNum(string input)
@@ -55,10 +169,15 @@ int Decimal::countDecimalPlace(string str)
 	return -1;
 }
 
-void Decimal::toIrreducible(fraction& f)
+void Decimal::toIrreducible(fraction& f) const
 {
 	if (f.denominator == "1")
 		return;
+	if (count(f.numerator.begin(), f.numerator.end(), '0') == f.numerator.length()) {
+		f.numerator = "0";
+		f.denominator = "1";
+		return;
+	}
 	Integer a = f.numerator;
 	Integer b = f.denominator;
 	Integer g = gcd(a, b);
@@ -68,7 +187,7 @@ void Decimal::toIrreducible(fraction& f)
 	f.denominator = b.fract.numerator;
 }
 
-Integer Decimal::gcd(Integer a, Integer b)
+const Integer Decimal::gcd(Integer a, Integer b) const
 {
 	Integer c;
 	while (b.fract.numerator != "0") {
@@ -79,6 +198,29 @@ Integer Decimal::gcd(Integer a, Integer b)
 	return a;
 }
 
+const Integer Decimal::lcm(Integer a, Integer b) const
+{
+	Integer c;
+	Integer r;
+	if (a > b) {
+		c = a;
+		r = c % b;
+		while (r.tostring() != "0") {
+			c = c + a;
+			r = c % b;
+		}
+	}
+	else {
+		c = b;
+		r = c % a;
+		while (r.tostring() != "0") {
+			c = c + b;
+			r = c % a;
+		}
+	}
+	return c;
+}
+
 Decimal::Decimal() : NumberObject()
 {
 	fract.numerator = "0";
@@ -86,6 +228,28 @@ Decimal::Decimal() : NumberObject()
 }
 
 Decimal::Decimal(const string str) : NumberObject()
+{
+	fract.numerator = str;
+	positive = fract.numerator[0] == '-' ? false : true;   //是否是負數
+	fract.numerator = positive ? fract.numerator : fract.numerator.substr(1);   //去掉負號
+	int place = countDecimalPlace(str);   //找小數點的位置
+	if (place != -1) {   //如果有找到小數點
+		dec = true;
+		string noDot = fract.numerator;
+		string::iterator it = find(noDot.begin(), noDot.end(), '.');
+		noDot.erase(it);   //去掉小數點
+		fract.numerator = noDot;   //分子設為去掉小數點的值
+		fract.denominator = "1";   //分母先設為1
+		fract.denominator.append(place, '0');   //分母後面加上0
+		toIrreducible(fract);
+	}
+	else {   //如果是整數
+		dec = false;
+		fract.denominator = "1";
+	}
+}
+
+Decimal::Decimal(const char* str) : NumberObject()
 {
 	if (isPureNum(str)) {   //是不是一個數 還是算式
 		dec = true;
@@ -103,39 +267,15 @@ Decimal::Decimal(const string str) : NumberObject()
 			toIrreducible(fract);
 		}
 		else {   //如果是整數
+			dec = false;
 			fract.denominator = "1";
 		}
 	}
-	else
-		fract = calculate(str);
-}
-
-Decimal::Decimal(const char* str) : NumberObject()
-{
-	if (isPureNum(str)) {   //是不是一個數 還是算式
-		fract.numerator = str;
-		positive = fract.numerator[0] == '-' ? false : true;   //是否是負數
-		fract.numerator = positive ? fract.numerator : fract.numerator.substr(1);   //去掉負號
-		int place = countDecimalPlace(str);   //找小數點的位置
-		if (place != -1) {   //如果有找到小數點
-			string noDot = fract.numerator;
-			string::iterator it = find(noDot.begin(), noDot.end(), '.');
-			noDot.erase(it);   //去掉小數點
-			fract.numerator = noDot;   //分子設為去掉小數點的值
-			fract.denominator = "1";   //分母先設為1
-			fract.denominator.append(place, '0');   //分母後面加上0
-			fract.numerator.append(100 - place, '0');   //數字尾巴補0
-			toIrreducible(fract);
-		}
-		else {   //如果是整數
-			fract.numerator = fract.numerator;
-			fract.denominator = "1";
-			fract.numerator.append(".");   //補上小數點
-			fract.numerator.append(100, '0');   //補上小數點後的100個0
-		}
+	else {
+		Decimal d = calculate(str);
+		fract = d.fract;
+		positive = d.positive;
 	}
-	else
-		fract = calculate(str);
 }
 
 const Decimal Decimal::operator!() const
@@ -150,26 +290,103 @@ const Decimal Decimal::operator^(const Decimal& num) const
 
 const Decimal Decimal::operator*(const Decimal& num) const
 {
-	return Decimal();
+	Integer d1(fract.denominator);   //分母1
+	Integer n1(fract.numerator);   //分子1
+	Integer d2(num.fract.denominator);   //分母2
+	Integer n2(num.fract.numerator);   //分子2
+	Decimal result;
+	result.fract.numerator = (n1 * n2).tostring();
+	result.fract.denominator = (d1 * d2).tostring();
+	if (!this->positive != !num.positive)
+		result.positive = false;
+	toIrreducible(result.fract);
+	return result;
 }
 
 const Decimal Decimal::operator/(const Decimal& num) const
 {
-	return Decimal();
+	Integer n1(fract.numerator);   //分子1
+	Integer n2(num.fract.numerator);   //分子2
+	Decimal result;
+	if (this->dec == false && num.dec == false) {   //如果是兩個整數相除
+		result = (n1 / n2).fract.numerator;
+		if (!this->positive != !num.positive)
+			result.positive = false;
+		result.fract.denominator = "1";
+		return result;
+	}
+	Integer d1(fract.denominator);   //分母1
+	Integer d2(num.fract.denominator);   //分母2
+	result.fract.numerator = (n1 * d2).tostring();
+	result.fract.denominator = (d1 * n2).tostring();
+	if (!this->positive != !num.positive)
+		result.positive = false;
+	toIrreducible(result.fract);
+	return result;
 }
 
 const Decimal Decimal::operator+(const Decimal& num) const
 {
-	return Decimal();
+	Integer d1(fract.denominator);   //分母1
+	Integer n1(fract.numerator);   //分子1
+	Integer d2(num.fract.denominator);   //分母2
+	Integer n2(num.fract.numerator);   //分子2
+	Integer r;
+	Decimal result;
+	n1.positive = this->positive;
+	n2.positive = num.positive;
+	if (d1 == d2) {
+		r = n1 + n2;
+		result.fract.denominator = d1.tostring();
+		result.fract.numerator = r.fract.numerator;
+		result.positive = r.positive;
+		toIrreducible(result.fract);
+		return result;
+	}
+	Integer g = gcd(d1, d2);
+	n1 = n1 * d2 / g;   //通分後的分子1
+	n2 = n2 * d1 / g;   //通分後的分子2
+	d1 = d1 * d2 / g;   //通分後的分母
+	r = n1 + n2;
+	result.fract.denominator = d1.tostring();
+	result.fract.numerator = r.fract.numerator;
+	result.positive = r.positive;
+	toIrreducible(result.fract);
+	return result;
 }
 
 const Decimal Decimal::operator-(const Decimal& num) const
 {
-	return Decimal();
+	Integer d1(fract.denominator);   //分母1
+	Integer n1(fract.numerator);   //分子1
+	Integer d2(num.fract.denominator);   //分母2
+	Integer n2(num.fract.numerator);   //分子2
+	Integer r;
+	Decimal result;
+	n1.positive = this->positive;
+	n2.positive = num.positive;
+	if (d1 == d2) {
+		r = n1 - n2;
+		result.fract.denominator = d1.tostring();
+		result.fract.numerator = r.fract.numerator;
+		result.positive = r.positive;
+		toIrreducible(result.fract);
+		return result;
+	}
+	Integer g = gcd(d1, d2);
+	n1 = n1 * d2 / g;   //通分後的分子1
+	n2 = n2 * d1 / g;   //通分後的分子2
+	d1 = d1 * d2 / g;   //通分後的分母
+	r = n1 - n2;
+	result.fract.denominator = d1.tostring();
+	result.fract.numerator = r.fract.numerator;
+	result.positive = r.positive;
+	toIrreducible(result.fract);
+	return result;
 }
 
 ostream& operator<<(ostream& outputStream, Decimal& numObj)
 {
-	cout << numObj.fract.numerator << "/" << numObj.fract.denominator;
+	cout << (numObj.positive ? "" : "-") << numObj.fract.numerator << "/" << numObj.fract.denominator;
 	return outputStream;
 }

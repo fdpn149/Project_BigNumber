@@ -9,6 +9,7 @@ public:
 	Integer();
 	Integer(const string str);
 	Integer(const char* str);
+	Integer(const Integer& cp);
 	const Integer operator!() const;   //¶¥­¼
 	const Integer operator^(const Integer& num) const;   //¦¸¤è
 	const Integer operator%(const Integer& num) const;   //¾l
@@ -17,6 +18,9 @@ public:
 	const Integer operator+(const Integer& num) const;   //¥[
 	const Integer operator-(const Integer& num) const;   //´î
 	void operator=(const Integer& num);
+	const bool operator==(const Integer& num) const;
+	const bool operator>(const Integer& num) const;
+	const bool operator<(const Integer& num) const;
 	friend istream& operator>>(istream& inputStream, Integer& numObj);
 	friend ostream& operator<<(ostream& outputStream, Integer& numObj);
 	const string tostring() const;

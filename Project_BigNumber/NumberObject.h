@@ -21,6 +21,6 @@ public:
 	NumberObject(string str);
 	NumberObject(string str, bool pos);
 	int find_rparenthesis(string str);   //§ä¥k¬A¸¹ªº¦ì¸m
-	int getNumeratorSize();
-	int getDenominatorSize();
+	const int getNumeratorSize() const;
+	const int getDenominatorSize() const;
 };

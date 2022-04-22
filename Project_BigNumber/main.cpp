@@ -30,7 +30,7 @@ int main()
 				if (areExistedVariable(input)) {
 					if (isDecimal(input)) {
 						//cout << "小數" << endl;
-						Decimal decimal = input;
+						Decimal decimal = input.c_str();
 						cout << decimal << endl;
 					}
 					else {
@@ -48,7 +48,7 @@ int main()
 			if (areExistedVariable(input)) {
 				if (isDecimal(input)) {
 					//cout << "小數" << endl;
-					Decimal decimal = input;
+					Decimal decimal = input.c_str();
 					cout << decimal << endl;
 				}
 				else {
