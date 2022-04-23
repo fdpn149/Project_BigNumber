@@ -15,7 +15,7 @@ string Integer::calculate(string input)
 			number.push_back(result);   //存數字
 			input.replace(ss_loc - 1, len + 4, result);   //將括號替換成結果
 			ss.str(input);   //更改ss的值
-			ss.seekg(ss_loc + result.length()-1);   //將ss指的位置設回來
+			ss.seekg(ss_loc + result.length() - 1);   //將ss指的位置設回來
 		}
 		else if (now_str[0] == '+' && now_str[1] == '(') {   //正 括號
 			int ss_loc = ss.tellg();
@@ -24,7 +24,7 @@ string Integer::calculate(string input)
 			number.push_back(result);   //存數字
 			input.replace(ss_loc - 2, len + 7, result);   //將括號替換成結果
 			ss.str(input);   //更改ss的值
-			ss.seekg(ss_loc + result.length()-1);   //將ss指的位置設回來
+			ss.seekg(ss_loc + result.length() - 1);   //將ss指的位置設回來
 		}
 		else if (now_str[0] == '-' && now_str[1] == '(') {   //負 括號
 			int ss_loc = ss.tellg();
@@ -33,7 +33,7 @@ string Integer::calculate(string input)
 			number.push_back(result);   //存數字
 			input.replace(ss_loc - 2, len + 7, result);   //將括號替換成結果
 			ss.str(input);   //更改ss的值
-			ss.seekg(ss_loc + result.length()-1);   //將ss指的位置設回來
+			ss.seekg(ss_loc + result.length() - 1);   //將ss指的位置設回來
 		}
 		else if (isalpha(now_str[0])) {   //變數
 
@@ -51,22 +51,22 @@ string Integer::calculate(string input)
 	return split_calculate(number, symbol);
 }
 
-string Integer::split_calculate(vector<string> &number, vector<char> &symbol)
+string Integer::split_calculate(vector<string>& number, vector<char>& symbol)
 {
 	//一堆負號的處理
-	for (int i = 0; i < number.size(); i++){
+	for (int i = 0; i < number.size(); i++) {
 		int count = 0;
-		for (int j = 0; j < number[i].size(); j++){
+		for (int j = 0; j < number[i].size(); j++) {
 			if (number[i][j] == '-')
 				count++;
 			else
 				break;
 		}
-		if (count % 2 == 0){
+		if (count % 2 == 0) {
 			for (int j = 0; j < count; j++)
 				number[i].erase(number[i].begin());
 		}
-		else{
+		else {
 			for (int j = 0; j < count - 1; j++)
 				number[i].erase(number[i].begin());
 		}
@@ -144,6 +144,11 @@ bool Integer::isAllDigit(string input)
 	return true;
 }
 
+void Integer::divide_two(const Integer& num)
+{
+
+}
+
 Integer::Integer() : NumberObject()
 {
 	dec = false;
@@ -181,7 +186,26 @@ const Integer Integer::operator!() const
 
 const Integer Integer::operator^(const Integer& num) const
 {
-	return "7474";
+	if (num.positive == false)
+		return Integer("0");
+	if (num.fract.numerator == "0")
+		return Integer("1");
+
+	Integer product = *this;
+	Integer total = "1";
+	Integer quotient = num;
+	Integer last_quotient = num;
+	Integer remainder;
+	Integer two = "2";
+	while (quotient.fract.numerator != "0") {
+		quotient = quotient / two;
+		remainder = last_quotient - (quotient + quotient);
+		last_quotient = quotient;
+		if (remainder == "1")
+			total = total * product;
+		product = product * product;
+	}
+	return total;
 }
 
 const Integer Integer::operator%(const Integer& num) const
@@ -222,9 +246,9 @@ const Integer Integer::operator*(const Integer& num) const
 	}
 
 	sum.positive = true;
-	if(!positive == !num.positive)
+	if (!positive == !num.positive)
 		return sum;
-	
+
 	sum.positive = false;
 	return sum;
 }
@@ -235,7 +259,7 @@ const Integer Integer::operator/(const Integer& num) const
 		cout << "除數不能為";
 		return "0";
 	}
-	
+
 	map<int, Integer> products;
 	products[1] = num;
 	products[2] = products[1] + products[1];
@@ -251,11 +275,11 @@ const Integer Integer::operator/(const Integer& num) const
 	Integer a;
 	string originNum = fract.numerator;
 	string lastNum;
-	string nowNum = originNum.substr(0, num.fract.numerator.length()-1);
+	string nowNum = originNum.substr(0, num.fract.numerator.length() - 1);
 	string quotient = "0";
 	string compare;
 	for (int i = 0; i <= (int)fract.numerator.length() - (int)num.fract.numerator.length(); i++) {
-		nowNum.append(to_string(originNum[num.fract.numerator.size() + i-1] - '0'));
+		nowNum.append(to_string(originNum[num.fract.numerator.size() + i - 1] - '0'));
 		int j = 1;
 		lastNum = "0";
 		compare = products[j].fract.numerator;
@@ -273,7 +297,7 @@ const Integer Integer::operator/(const Integer& num) const
 		quotient.append(to_string(j));
 		nowNum = a.fract.numerator;
 	}
-	while(quotient.length() > 1 && quotient[0] == '0')
+	while (quotient.length() > 1 && quotient[0] == '0')
 		quotient.erase(quotient.begin());
 
 	a.fract.numerator = quotient;
@@ -294,7 +318,7 @@ const Integer Integer::operator+(const Integer& num) const
 	if (!this->positive == !num.positive) {   //同號
 		if (numA.getNumeratorSize() < numB.getNumeratorSize())
 			numA.fract.numerator.insert(numA.fract.numerator.begin(), numB.getNumeratorSize() - numA.getNumeratorSize(), '0');   //補0
-		else if(numA.getNumeratorSize() > numB.getNumeratorSize())
+		else if (numA.getNumeratorSize() > numB.getNumeratorSize())
 			numB.fract.numerator.insert(numB.fract.numerator.begin(), numA.getNumeratorSize() - numB.getNumeratorSize(), '0');   //補0
 		bool over = false;   //進位
 		for (int i = numA.getNumeratorSize() - 1; i >= 0; i--) {
@@ -371,7 +395,7 @@ const Integer Integer::operator-(const Integer& num) const
 		else
 			numA.positive = true;
 
-			return numA;
+		return numA;
 	}
 	else if (positive) {   //A-(-B)
 		return numA + numB;

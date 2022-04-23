@@ -237,32 +237,37 @@ const string Decimal::findExactlyValue()
 		dot = numerator.length() - denominator.length() + 1;   //小數點位置
 	}
 	int i;
+	bool onlyZero = false;
 	for(i = 0; i <= 100 - denominator.length() + numerator.length(); i++){
-		int n = 1;
-		while (products[n] <= remainder)
-			n++;
-		n--;
-		quotient.append(to_string(n));
-		remainder = remainder - products[n];
+		if (!onlyZero) {
+			int n = 1;
+			while (products[n] <= remainder)
+				n++;
+			n--;
+			quotient.append(to_string(n));
+			remainder = remainder - products[n];
 
-		if (remainder.fract.numerator == "0" && pos >= numerator.length())   //除完了
-			break;
+			if (remainder.fract.numerator == "0" && pos >= numerator.length()) {   //除完了
+				onlyZero = true;
+				continue;
+			}
 
-		if (remainder.fract.numerator[0] == '0')   //清開頭的0
-			remainder.fract.numerator.erase(0, 1);
+			if (remainder.fract.numerator[0] == '0')   //清開頭的0
+				remainder.fract.numerator.erase(0, 1);
 
-		pos++;
-		if (pos < numerator.length())
-			remainder.fract.numerator.append(string(1, numerator[pos]));
-		else
-			remainder.fract.numerator.append("0");
+			pos++;
+			if (pos < numerator.length())
+				remainder.fract.numerator.append(string(1, numerator[pos]));
+			else
+				remainder.fract.numerator.append("0");
+		}
+		else {
+			quotient.append("0");
+		}
 	}
 	quotient.insert(dot, ".");
 	while (quotient[0] == '0' && quotient[1] != '.')   //清開頭的0
 		quotient.erase(0, 1);
-
-	if(99 - i + dot > 0)
-		quotient.append(99 - i + dot, '0');
 	return quotient;
 }
 
@@ -330,7 +335,37 @@ const Decimal Decimal::operator!() const
 
 const Decimal Decimal::operator^(const Decimal& num) const
 {
-	return Decimal();
+	Integer product = this->fract.numerator;
+	Integer totalN = "1";
+	Integer quotient = num.fract.numerator;
+	Integer last_quotient = num.fract.numerator;
+	Integer remainder;
+	Integer two = "2";
+	while (quotient.fract.numerator != "0") {
+		quotient = quotient / two;
+		remainder = last_quotient - (quotient + quotient);
+		last_quotient = quotient;
+		if (remainder == "1")
+			totalN = totalN * product;
+		product = product * product;
+	}
+	product = this->fract.denominator;
+	Integer totalD = "1";
+	quotient = num.fract.numerator;
+	last_quotient = num.fract.numerator;
+
+	while (quotient.fract.numerator != "0") {
+		quotient = quotient / two;
+		remainder = last_quotient - (quotient + quotient);
+		last_quotient = quotient;
+		if (remainder == "1")
+			totalD = totalD * product;
+		product = product * product;
+	}
+	Decimal total;
+	total.fract.numerator = totalN.tostring();
+	total.fract.denominator = totalD.tostring();
+	return total;
 }
 
 const Decimal Decimal::operator*(const Decimal& num) const
