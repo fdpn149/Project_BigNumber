@@ -335,7 +335,6 @@ void Decimal::sqrt(Decimal& d) const
 		}
 	}
 	d.fract.numerator = result;
-	d.fract.denominator = "1";
 	d.fract.denominator.append(100, '0');
 	toIrreducible(d.fract);
 }
