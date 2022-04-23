@@ -33,7 +33,7 @@ Decimal Decimal::calculate(string input)
 			int ss_loc = ss.tellg();
 			int len = find_rparenthesis(input.substr(ss_loc + 1));   //找括號所括的長度
 			Decimal result_d = calculate(input.substr(ss_loc + 1, len + 2));   //括號中的運算結果
-			result_d.positive = false;   //設成負
+			result_d.positive = !result_d.positive;   //變號
 			string result = "-(" + result_d.fract.numerator + "/" + result_d.fract.denominator + ")";   //轉成分數
 			number.push_back(result_d);   //存數字
 			input.replace(ss_loc - 2, len + 7, result);   //將括號替換成結果

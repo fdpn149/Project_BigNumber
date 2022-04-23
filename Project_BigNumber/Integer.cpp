@@ -53,7 +53,24 @@ string Integer::calculate(string input)
 
 string Integer::split_calculate(vector<string> &number, vector<char> &symbol)
 {
-	/*(一堆負號的處理)*/
+	//一堆負號的處理
+	for (int i = 0; i < number.size(); i++){
+		int count = 0;
+		for (int j = 0; j < number[i].size(); j++){
+			if (number[i][j] == '-')
+				count++;
+			else
+				break;
+		}
+		if (count % 2 == 0){
+			for (int j = 0; j < count; j++)
+				number[i].erase(number[i].begin());
+		}
+		else{
+			for (int j = 0; j < count - 1; j++)
+				number[i].erase(number[i].begin());
+		}
+	}
 
 	//階乘計算
 	for (int i = 0; i < symbol.size(); i++) {
@@ -66,14 +83,13 @@ string Integer::split_calculate(vector<string> &number, vector<char> &symbol)
 	}
 
 	//次方運算
-	for (int i = 0; i < symbol.size(); i++) {
+	for (int i = symbol.size() - 1; i >= 0; i--) {
 		if (symbol[i] == '^') {   //若遇到次方
 			Integer num1 = number[i];
 			Integer num2 = number[i + 1];
 			number[i] = (num1 ^ num2).tostring();
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
-			i--;
 		}
 	}
 
@@ -205,7 +221,7 @@ const Integer Integer::operator*(const Integer& num) const
 		digit++;
 	}
 
-
+	sum.positive = true;
 	if(!positive == !num.positive)
 		return sum;
 	

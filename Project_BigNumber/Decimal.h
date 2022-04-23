@@ -4,14 +4,13 @@
 
 class Decimal : public NumberObject
 {
-	Decimal calculate(string input);
-	Decimal split_calculate(vector<Decimal>& number, vector<char>& symbol);
-	bool isPureNum(string input);
-	int countDecimalPlace(string str);
-	void toIrreducible(fraction& f) const;
-	const Integer gcd(Integer a, Integer b) const;
-	const Integer lcm(Integer a, Integer b) const;
-	const string findExactlyValue();
+	Decimal calculate(string input);   //矪瞶璸衡
+	Decimal split_calculate(vector<Decimal>& number, vector<char>& symbol);   //╊秨璸衡
+	bool isPureNum(string input);   //琌琌计
+	int countDecimalPlace(string str);   //璸衡计Τ碭
+	void toIrreducible(fraction& f) const;   //てΘ程虏だ计
+	const Integer gcd(Integer a, Integer b) const;   //程そ计
+	const string findExactlyValue();   //盢だ计锣Θ计
 public:
 	Decimal();
 	Decimal(const string str);
