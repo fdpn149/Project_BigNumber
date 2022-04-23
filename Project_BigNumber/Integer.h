@@ -5,7 +5,6 @@ class Integer : public NumberObject
 	string calculate(string input);
 	string split_calculate(vector<string> &number, vector<char> &symbol);
 	bool isAllDigit(string input);
-	void divide_two(const Integer& num);
 public:
 	Integer();
 	Integer(const string str);
@@ -21,6 +20,7 @@ public:
 	void operator=(const Integer& num);
 	const bool operator==(const Integer& num) const;
 	const bool operator>(const Integer& num) const;
+	const bool operator>=(const Integer& num) const;
 	const bool operator<(const Integer& num) const;
 	const bool operator<=(const Integer& num) const;
 	friend istream& operator>>(istream& inputStream, Integer& numObj);

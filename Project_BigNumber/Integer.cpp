@@ -144,10 +144,6 @@ bool Integer::isAllDigit(string input)
 	return true;
 }
 
-void Integer::divide_two(const Integer& num)
-{
-
-}
 
 Integer::Integer() : NumberObject()
 {
@@ -416,37 +412,77 @@ void Integer::operator=(const Integer& num)
 
 const bool Integer::operator==(const Integer& num) const
 {
-	return this->fract.numerator == num.fract.numerator;
+	string a = this->fract.numerator;
+	string b = num.fract.numerator;
+	while (a[0] == '0' && a.length() > 1)
+		a.erase(0, 1);
+	while (b[0] == '0' && b.length() > 1)
+		b.erase(0, 1);
+	return a == b;
 }
 
 const bool Integer::operator>(const Integer& num) const
 {
-	if (this->getNumeratorSize() > num.getNumeratorSize())
+	string a = this->fract.numerator;
+	string b = num.fract.numerator;
+	while (a[0] == '0' && a.length() > 1)
+		a.erase(0, 1);
+	while (b[0] == '0' && b.length() > 1)
+		b.erase(0, 1);
+	if (a.length() > b.length())
 		return 1;
-	else if (this->getNumeratorSize() < num.getNumeratorSize())
+	else if (a.length() < b.length())
 		return 0;
 	else
-		return this->fract.numerator > num.fract.numerator;
+		return a > b;
+}
+
+const bool Integer::operator>=(const Integer& num) const
+{
+	string a = this->fract.numerator;
+	string b = num.fract.numerator;
+	while (a[0] == '0' && a.length() > 1)
+		a.erase(0, 1);
+	while (b[0] == '0' && b.length() > 1)
+		b.erase(0, 1);
+	if (a.length() > b.length())
+		return 1;
+	else if (a.length() < b.length())
+		return 0;
+	else
+		return a >= b;
 }
 
 const bool Integer::operator<(const Integer& num) const
 {
-	if (this->getNumeratorSize() < num.getNumeratorSize())
+	string a = this->fract.numerator;
+	string b = num.fract.numerator;
+	while (a[0] == '0' && a.length() > 1)
+		a.erase(0, 1);
+	while (b[0] == '0' && b.length() > 1)
+		b.erase(0, 1);
+	if (a.length() < b.length())
 		return 1;
-	else if (this->getNumeratorSize() > num.getNumeratorSize())
+	else if (a.length() > b.length())
 		return 0;
 	else
-		return this->fract.numerator < num.fract.numerator;
+		return a < b;
 }
 
 const bool Integer::operator<=(const Integer& num) const
 {
-	if (this->getNumeratorSize() < num.getNumeratorSize())
+	string a = this->fract.numerator;
+	string b = num.fract.numerator;
+	while (a[0] == '0' && a.length() > 1)
+		a.erase(0, 1);
+	while (b[0] == '0' && b.length() > 1)
+		b.erase(0, 1);
+	if (a.length() < b.length())
 		return 1;
-	else if (this->getNumeratorSize() > num.getNumeratorSize())
+	else if (a.length() > b.length())
 		return 0;
 	else
-		return this->fract.numerator <= num.fract.numerator;
+		return a <= b;
 }
 
 const string Integer::tostring() const

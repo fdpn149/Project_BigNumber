@@ -230,7 +230,7 @@ const string Decimal::findExactlyValue()
 		dot = 1;   //计翴砞材1
 		remainder = numerator;
 		remainder.fract.numerator.append(denominator.length() - numerator.length(), '0');
-		quotient.append(denominator.length() - 1, '0');
+		quotient.append(denominator.length() - numerator.length(), '0');
 	}
 	else {
 		remainder = numerator.substr(0, denominator.length());
@@ -238,7 +238,7 @@ const string Decimal::findExactlyValue()
 	}
 	int i;
 	bool onlyZero = false;
-	for(i = 0; i <= 100 - denominator.length() + numerator.length(); i++){
+	for (i = 0; i <= 100 - denominator.length() + numerator.length(); i++) {
 		if (!onlyZero) {
 			int n = 1;
 			while (products[n] <= remainder)
@@ -271,8 +271,78 @@ const string Decimal::findExactlyValue()
 	return quotient;
 }
 
+void Decimal::sqrt(Decimal& d) const
+{
+	string num = (Integer(d.fract.numerator) * Integer(d.fract.denominator)).tostring();
+	if (num.length() % 2 == 1)
+		num.insert(num.begin(), '0');
+	int dot = num.length() / 2;
+	Integer now_num;
+	now_num.fract.numerator = num.substr(0, 2);
+	string result;
+	int n = 1;
+	Integer compare = "1";
+	Integer last_compare = "0";
+	while (now_num > compare) {
+		n++;
+		last_compare.fract.numerator = compare.fract.numerator;
+		compare.fract.numerator = to_string(n * n);
+	}
+	if (now_num < compare) {
+		compare.fract.numerator = last_compare.fract.numerator;
+		n--;
+	}
+	result.append(to_string(n));
+	Integer add = to_string(n * 20);
+	Integer temp;
+
+	for (int i = 0; i < 99 + dot; i++) {
+		now_num = now_num - compare;
+		if (now_num == "0" && num.length() == 0) {
+			result.pop_back();
+			d.fract.numerator = result;
+			toIrreducible(d.fract);
+			d.dec = false;
+			return;
+		}
+		else {
+			if (num.length() > 0) {
+				num.erase(0, 2);
+				if (num.length() > 0)
+					now_num.fract.numerator.append(num.substr(0, 2));
+				else
+					now_num.fract.numerator.append("00");
+			}
+			else
+				now_num.fract.numerator.append("00");
+			n = 1;
+			compare = add + Integer("1");
+			last_compare = "0";
+			while (now_num > compare) {
+				n++;
+				last_compare.fract.numerator = compare.fract.numerator;
+				temp.fract.numerator = to_string(n);
+				compare = (add + temp) * temp;
+			}
+			if (now_num < compare) {
+				compare.fract.numerator = last_compare.fract.numerator;
+				n--;
+				temp.fract.numerator = to_string(n);
+			}
+			result.append(to_string(n));
+			add = add + temp + temp;
+			add.fract.numerator.append("0");
+		}
+	}
+	d.fract.numerator = result;
+	d.fract.denominator = "1";
+	d.fract.denominator.append(100, '0');
+	toIrreducible(d.fract);
+}
+
 Decimal::Decimal() : NumberObject()
 {
+	dec = true;
 	fract.numerator = "0";
 	fract.denominator = "1";
 }
@@ -335,37 +405,63 @@ const Decimal Decimal::operator!() const
 
 const Decimal Decimal::operator^(const Decimal& num) const
 {
-	Integer product = this->fract.numerator;
-	Integer totalN = "1";
-	Integer quotient = num.fract.numerator;
-	Integer last_quotient = num.fract.numerator;
-	Integer remainder;
-	Integer two = "2";
-	while (quotient.fract.numerator != "0") {
-		quotient = quotient / two;
-		remainder = last_quotient - (quotient + quotient);
-		last_quotient = quotient;
-		if (remainder == "1")
-			totalN = totalN * product;
-		product = product * product;
-	}
-	product = this->fract.denominator;
-	Integer totalD = "1";
-	quotient = num.fract.numerator;
-	last_quotient = num.fract.numerator;
+	if (!this->positive && num.fract.denominator == "2")
+		cout << "璽计ぃ秨腹" << endl;
+	if (num.fract.denominator == "1" || num.fract.denominator == "2") {
+		Integer product = this->fract.numerator;
+		Integer totalN = "1";
+		Integer quotient = num.fract.numerator;
+		Integer last_quotient = num.fract.numerator;
+		Integer remainder;
+		Integer two = "2";
+		while (quotient.fract.numerator != "0") {
+			quotient = quotient / two;
+			remainder = last_quotient - (quotient + quotient);
+			last_quotient = quotient;
+			if (remainder == "1")
+				totalN = totalN * product;
+			product = product * product;
+			if (product.fract.numerator.length() > 100 && this->getDenominatorSize() > 100)
+				product.fract.numerator.erase(product.fract.numerator.begin() + 101, product.fract.numerator.end());
+		}
+		Integer totalD = "1";
+		if (this->dec == true) {   //璝┏计计
+			product = this->fract.denominator;
+			quotient = num.fract.numerator;
+			last_quotient = num.fract.numerator;
 
-	while (quotient.fract.numerator != "0") {
-		quotient = quotient / two;
-		remainder = last_quotient - (quotient + quotient);
-		last_quotient = quotient;
-		if (remainder == "1")
-			totalD = totalD * product;
-		product = product * product;
+			while (quotient.fract.numerator != "0") {
+				quotient = quotient / two;
+				remainder = last_quotient - (quotient + quotient);
+				last_quotient = quotient;
+				if (remainder == "1")
+					totalD = totalD * product;
+				product = product * product;
+				if (product.fract.numerator.length() > 100 && this->getDenominatorSize() > 100)
+					product.fract.numerator.erase(product.fract.numerator.begin() + 101, product.fract.numerator.end());
+			}
+		}
+		Decimal total;
+		if (num.positive) {   //璝Ωよタ
+			total.fract.numerator = totalN.tostring();
+			total.fract.denominator = totalD.tostring();
+		}
+		else {
+			total.fract.numerator = totalD.tostring();
+			total.fract.denominator = totalN.tostring();
+		}
+		if (num.fract.denominator == "2") {
+			sqrt(total);
+			if (!num.positive) {
+				total.fract.numerator.swap(total.fract.denominator);
+			}
+		}
+		return total;
 	}
-	Decimal total;
-	total.fract.numerator = totalN.tostring();
-	total.fract.denominator = totalD.tostring();
-	return total;
+	else {
+		cout << "计叫块0.5计" << endl;
+	}
+
 }
 
 const Decimal Decimal::operator*(const Decimal& num) const
