@@ -251,10 +251,8 @@ const Integer Integer::operator*(const Integer& num) const
 
 const Integer Integer::operator/(const Integer& num) const
 {
-	if (num.fract.numerator == "0") {
-		cout << "除數不能為";
-		return "0";
-	}
+	if (num.fract.numerator == "0")
+		throw 0;
 
 	map<int, Integer> products;
 	products[1] = num;

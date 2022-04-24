@@ -405,8 +405,12 @@ const Decimal Decimal::operator!() const
 const Decimal Decimal::operator^(const Decimal& num) const
 {
 	if (!this->positive && num.fract.denominator == "2")
-		cout << "負數不能開根號" << endl;
-	if (num.fract.denominator == "1" || num.fract.denominator == "2") {
+		throw -1;
+	if (num.fract.denominator != "1" && num.fract.denominator != "2")
+		throw 3;
+	if (this->fract.numerator == "0" && !num.positive)
+		throw 0;
+
 		Integer product = this->fract.numerator;
 		Integer totalN = "1";
 		Integer quotient = num.fract.numerator;
@@ -456,11 +460,6 @@ const Decimal Decimal::operator^(const Decimal& num) const
 			}
 		}
 		return total;
-	}
-	else {
-		cout << "指數請輸入0.5的倍數" << endl;
-	}
-
 }
 
 const Decimal Decimal::operator*(const Decimal& num) const
@@ -480,6 +479,9 @@ const Decimal Decimal::operator*(const Decimal& num) const
 
 const Decimal Decimal::operator/(const Decimal& num) const
 {
+	if (num.fract.numerator == "0")
+		throw 0;
+
 	Integer n1(fract.numerator);   //分子1
 	Integer n2(num.fract.numerator);   //分子2
 	Decimal result;

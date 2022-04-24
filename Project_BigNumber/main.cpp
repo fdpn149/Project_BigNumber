@@ -12,6 +12,17 @@ vector<Variable> variable = { {"abc", "Decimal", "3.14"}, {"defg","Integer","98"
 
 bool areExistedVariable(string input);
 bool isDecimal(string input);
+void printError(int err)
+{
+	switch (err) {
+	case -1:
+		cout << "璽计ぃ秨腹" << endl; break;
+	case 0:
+		cout << "埃计ぃ0" << endl; break;
+	case 3:
+		cout << "计叫块0.5计" << endl; break;
+	}
+}
 
 int main()
 {
@@ -30,13 +41,23 @@ int main()
 				if (areExistedVariable(input)) {
 					if (isDecimal(input)) {
 						//cout << "计" << endl;
-						Decimal decimal = input.c_str();
-						cout << decimal << endl;
+						try {
+							Decimal decimal = input.c_str();
+							cout << decimal << endl;
+						}
+						catch (int err) {
+							printError(err);
+						}
 					}
 					else {
 						//cout << "俱计" << endl;
-						Integer integer = input.c_str();
-						cout << integer << endl;
+						try {
+							Integer integer = input.c_str();
+							cout << integer << endl;
+						}
+						catch (int err) {
+							printError(err);
+						}
 					}
 				}
 				else {
@@ -48,13 +69,23 @@ int main()
 			if (areExistedVariable(input)) {
 				if (isDecimal(input)) {
 					//cout << "计" << endl;
-					Decimal decimal = input.c_str();
-					cout << decimal << endl;
+					try {
+						Decimal decimal = input.c_str();
+						cout << decimal << endl;
+					}
+					catch (int err) {
+						printError(err);
+					}
 				}
 				else {
 					//cout << "俱计" << endl;
-					Integer integer = input.c_str();
-					cout << integer << endl;
+					try {
+						Integer integer = input.c_str();
+						cout << integer << endl;
+					}
+					catch (int err) {
+						printError(err);
+					}
 				}
 			}
 			else {
