@@ -399,7 +399,15 @@ Decimal::Decimal(const char* str) : NumberObject()
 
 const Decimal Decimal::operator!() const
 {
-	return Decimal();
+	if (this->fract.denominator != "1")
+		throw 2;
+	if (this->positive == false)
+		throw 1;
+	Integer n;
+	Decimal result;
+	n.fract.numerator = this->fract.numerator;
+	result.fract.numerator = (!n).tostring();
+	return result;
 }
 
 const Decimal Decimal::operator^(const Decimal& num) const

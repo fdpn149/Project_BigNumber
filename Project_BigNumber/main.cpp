@@ -15,10 +15,16 @@ bool isDecimal(string input);
 void printError(int err)
 {
 	switch (err) {
+	case -2:
+		cout << "輸入格式有誤" << endl; break;
 	case -1:
 		cout << "負數不能開根號" << endl; break;
 	case 0:
 		cout << "除數不能為0" << endl; break;
+	case 1:
+		cout << "負數不能算階乘" << endl; break;
+	case 2:
+		cout << "小數不能算階乘" << endl; break;
 	case 3:
 		cout << "指數請輸入0.5的倍數" << endl; break;
 	}
@@ -48,6 +54,9 @@ int main()
 						catch (int err) {
 							printError(err);
 						}
+						catch (out_of_range) {
+							printError(-2);
+						}
 					}
 					else {
 						//cout << "整數" << endl;
@@ -57,6 +66,9 @@ int main()
 						}
 						catch (int err) {
 							printError(err);
+						}
+						catch (out_of_range) {
+							printError(-2);
 						}
 					}
 				}
@@ -76,6 +88,9 @@ int main()
 					catch (int err) {
 						printError(err);
 					}
+					catch (out_of_range) {
+						printError(-2);
+					}
 				}
 				else {
 					//cout << "整數" << endl;
@@ -85,6 +100,9 @@ int main()
 					}
 					catch (int err) {
 						printError(err);
+					}
+					catch (out_of_range) {
+						printError(-2);
 					}
 				}
 			}

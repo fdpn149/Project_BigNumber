@@ -23,6 +23,7 @@ public:
 	const bool operator>=(const Integer& num) const;
 	const bool operator<(const Integer& num) const;
 	const bool operator<=(const Integer& num) const;
+	void operator++(int);
 	friend istream& operator>>(istream& inputStream, Integer& numObj);
 	friend ostream& operator<<(ostream& outputStream, Integer& numObj);
 	const string tostring() const;

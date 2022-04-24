@@ -57,26 +57,26 @@ string Integer::split_calculate(vector<string>& number, vector<char>& symbol)
 	for (int i = 0; i < number.size(); i++) {
 		int count = 0;
 		for (int j = 0; j < number[i].size(); j++) {
-			if (number[i][j] == '-')
+			if (number.at(i).at(j) == '-')
 				count++;
 			else
 				break;
 		}
 		if (count % 2 == 0) {
 			for (int j = 0; j < count; j++)
-				number[i].erase(number[i].begin());
+				number.at(i).erase(number.at(i).begin());
 		}
 		else {
 			for (int j = 0; j < count - 1; j++)
-				number[i].erase(number[i].begin());
+				number.at(i).erase(number.at(i).begin());
 		}
 	}
 
 	//階乘計算
 	for (int i = 0; i < symbol.size(); i++) {
-		if (symbol[i] == '!') {   //若遇到階乘
-			Integer num = number[i];
-			number[i] = (!num).tostring();
+		if (symbol.at(i) == '!') {   //若遇到階乘
+			Integer num = number.at(i);
+			number.at(i) = (!num).tostring();
 			symbol.erase(symbol.begin() + i);
 			i--;
 		}
@@ -84,29 +84,29 @@ string Integer::split_calculate(vector<string>& number, vector<char>& symbol)
 
 	//次方運算
 	for (int i = symbol.size() - 1; i >= 0; i--) {
-		if (symbol[i] == '^') {   //若遇到次方
-			Integer num1 = number[i];
-			Integer num2 = number[i + 1];
-			number[i] = (num1 ^ num2).tostring();
+		if (symbol.at(i) == '^') {   //若遇到次方
+			Integer num1 = number.at(i);
+			Integer num2 = number.at(i+1);
+			number.at(i) = (num1 ^ num2).tostring();
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
 		}
 	}
 
 	for (int i = 0; i < symbol.size(); i++) {
-		if (symbol[i] == '*') {   //若遇到乘
-			Integer num1 = number[i];
-			Integer num2 = number[i + 1];
-			number[i] = (num1 * num2).tostring();
+		if (symbol.at(i) == '*') {   //若遇到乘
+			Integer num1 = number.at(i);
+			Integer num2 = number.at(i + 1);
+			number.at(i) = (num1 * num2).tostring();
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
 			i--;
 			continue;
 		}
-		if (symbol[i] == '/') {   //若遇到除
-			Integer num1 = number[i];
-			Integer num2 = number[i + 1];
-			number[i] = (num1 / num2).tostring();
+		if (symbol.at(i) == '/') {   //若遇到除
+			Integer num1 = number.at(i);
+			Integer num2 = number.at(i+1);
+			number.at(i) = (num1 / num2).tostring();
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
 			i--;
@@ -114,25 +114,29 @@ string Integer::split_calculate(vector<string>& number, vector<char>& symbol)
 	}
 
 	for (int i = 0; i < symbol.size(); i++) {
-		if (symbol[i] == '+') {   //若遇到加
-			Integer num1 = number[i];
-			Integer num2 = number[i + 1];
-			number[i] = (num1 + num2).tostring();
+		if (symbol.at(i) == '+') {   //若遇到加
+			Integer num1 = number.at(i);
+			Integer num2 = number.at(i+1);
+			number.at(i) = (num1 + num2).tostring();
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
 			i--;
 			continue;
 		}
-		if (symbol[i] == '-') {   //若遇到減
-			Integer num1 = number[i];
-			Integer num2 = number[i + 1];
-			number[i] = (num1 - num2).tostring();
+		if (symbol.at(i) == '-') {   //若遇到減
+			Integer num1 = number.at(i);
+			Integer num2 = number.at(i+1);
+			number.at(i) = (num1 - num2).tostring();
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
 			i--;
 		}
 	}
-	return number[0];
+	for (int i = 0; i < number.at(0).length(); i++) {
+		if (!isdigit(number.at(0).at(i)))
+			throw -2;
+	}
+	return number.at(0);
 }
 
 bool Integer::isAllDigit(string input)
@@ -177,7 +181,15 @@ Integer::Integer(const Integer& cp)
 
 const Integer Integer::operator!() const
 {
-	return "9191";
+	if (this->positive == false)
+		throw 1;
+	Integer count = "1";
+	Integer product = "1";
+	while (count < this->fract.numerator) {
+		count++;
+		product = product * count;
+	}
+	return product;
 }
 
 const Integer Integer::operator^(const Integer& num) const
@@ -481,6 +493,33 @@ const bool Integer::operator<=(const Integer& num) const
 		return 0;
 	else
 		return a <= b;
+}
+
+void Integer::operator++(int)
+{
+	int count = fract.numerator.size() - 1;
+	if (fract.numerator[count] == '9') {
+		if (count == 0)
+			this->fract.numerator.insert(0, 1, '1');
+		else {
+			count--;
+			while (count >= 0 && fract.numerator[count] == '9')
+				count--;
+			if (count == -1) {
+				this->fract.numerator.insert(0, 1, '1');
+				count = 0;
+			}
+			else {
+				this->fract.numerator[count]++;
+			}
+		}
+		for (int i = count + 1; i < fract.numerator.size(); i++) {
+			fract.numerator[i] = '0';
+		}
+	}
+	else {
+		this->fract.numerator[count]++;
+	}
 }
 
 const string Integer::tostring() const
