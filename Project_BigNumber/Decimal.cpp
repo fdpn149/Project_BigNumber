@@ -48,13 +48,8 @@ Decimal Decimal::calculate(string input)
 			number.push_back(d);
 		}
 		else if ((now_str[0] == '+' || now_str[0] == '-') && now_str.length() > 1) {   //タ璽计
-			bool dot = false;
-			for (int i = 1; i < now_str.length(); i++) {
-				if (dot == false && now_str.at(i) == '.')
-					dot = true;
-				else if (!isdigit(now_str.at(i)))
-					throw -2;
-			}
+			if (now_str[0] == '+')
+				now_str.erase(0, 1);
 			Decimal d = now_str;
 			number.push_back(d);
 		}
@@ -349,12 +344,14 @@ void Decimal::sqrt(Decimal& d) const
 Decimal::Decimal() : NumberObject()
 {
 	dec = true;
+	dot = true;
 	fract.numerator = "0";
 	fract.denominator = "1";
 }
 
 Decimal::Decimal(const string str) : NumberObject()
 {
+	dot = true;
 	fract.numerator = str;
 	positive = fract.numerator[0] == '-' ? false : true;   //琌琌璽计
 	fract.numerator = positive ? fract.numerator : fract.numerator.substr(1);   //奔璽腹
@@ -377,6 +374,7 @@ Decimal::Decimal(const string str) : NumberObject()
 
 Decimal::Decimal(const char* str) : NumberObject()
 {
+	dot = true;
 	if (isPureNum(str)) {   //琌ぃ琌计 临琌衡Α
 		dec = true;
 		fract.numerator = str;
@@ -420,61 +418,61 @@ const Decimal Decimal::operator!() const
 const Decimal Decimal::operator^(const Decimal& num) const
 {
 	if (!this->positive && num.fract.denominator == "2")
-		throw -1;
+		throw - 1;
 	if (num.fract.denominator != "1" && num.fract.denominator != "2")
 		throw 3;
 	if (this->fract.numerator == "0" && !num.positive)
 		throw 0;
 
-		Integer product = this->fract.numerator;
-		Integer totalN = "1";
-		Integer quotient = num.fract.numerator;
-		Integer last_quotient = num.fract.numerator;
-		Integer remainder;
-		Integer two = "2";
+	Integer product = this->fract.numerator;
+	Integer totalN = "1";
+	Integer quotient = num.fract.numerator;
+	Integer last_quotient = num.fract.numerator;
+	Integer remainder;
+	Integer two = "2";
+	while (quotient.fract.numerator != "0") {
+		quotient = quotient / two;
+		remainder = last_quotient - (quotient + quotient);
+		last_quotient = quotient;
+		if (remainder == "1")
+			totalN = totalN * product;
+		product = product * product;
+		if (product.fract.numerator.length() > 100 && this->getDenominatorSize() > 100)
+			product.fract.numerator.erase(product.fract.numerator.begin() + 101, product.fract.numerator.end());
+	}
+	Integer totalD = "1";
+	if (this->dec == true) {   //璝┏计计
+		product = this->fract.denominator;
+		quotient = num.fract.numerator;
+		last_quotient = num.fract.numerator;
+
 		while (quotient.fract.numerator != "0") {
 			quotient = quotient / two;
 			remainder = last_quotient - (quotient + quotient);
 			last_quotient = quotient;
 			if (remainder == "1")
-				totalN = totalN * product;
+				totalD = totalD * product;
 			product = product * product;
 			if (product.fract.numerator.length() > 100 && this->getDenominatorSize() > 100)
 				product.fract.numerator.erase(product.fract.numerator.begin() + 101, product.fract.numerator.end());
 		}
-		Integer totalD = "1";
-		if (this->dec == true) {   //璝┏计计
-			product = this->fract.denominator;
-			quotient = num.fract.numerator;
-			last_quotient = num.fract.numerator;
-
-			while (quotient.fract.numerator != "0") {
-				quotient = quotient / two;
-				remainder = last_quotient - (quotient + quotient);
-				last_quotient = quotient;
-				if (remainder == "1")
-					totalD = totalD * product;
-				product = product * product;
-				if (product.fract.numerator.length() > 100 && this->getDenominatorSize() > 100)
-					product.fract.numerator.erase(product.fract.numerator.begin() + 101, product.fract.numerator.end());
-			}
+	}
+	Decimal total;
+	if (num.positive) {   //璝Ωよタ
+		total.fract.numerator = totalN.tostring();
+		total.fract.denominator = totalD.tostring();
+	}
+	else {
+		total.fract.numerator = totalD.tostring();
+		total.fract.denominator = totalN.tostring();
+	}
+	if (num.fract.denominator == "2") {
+		sqrt(total);
+		if (!num.positive) {
+			total.fract.numerator.swap(total.fract.denominator);
 		}
-		Decimal total;
-		if (num.positive) {   //璝Ωよタ
-			total.fract.numerator = totalN.tostring();
-			total.fract.denominator = totalD.tostring();
-		}
-		else {
-			total.fract.numerator = totalD.tostring();
-			total.fract.denominator = totalN.tostring();
-		}
-		if (num.fract.denominator == "2") {
-			sqrt(total);
-			if (!num.positive) {
-				total.fract.numerator.swap(total.fract.denominator);
-			}
-		}
-		return total;
+	}
+	return total;
 }
 
 const Decimal Decimal::operator*(const Decimal& num) const

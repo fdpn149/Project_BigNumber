@@ -14,8 +14,10 @@ struct fraction {
 class NumberObject
 {
 public:
+	static map<string,NumberObject*> variable;
 	fraction fract;
 	bool dec;   //是否是小數
+	bool dot;   //是否保留小數
 	bool positive;
 	NumberObject();
 	NumberObject(string str);
@@ -23,4 +25,7 @@ public:
 	int find_rparenthesis(string str);   //找右括號的位置
 	const int getNumeratorSize() const;
 	const int getDenominatorSize() const;
+	static int inputJudge(string input);
+	static int replaceVariables(string& input);
+	static void printError(int err);
 };

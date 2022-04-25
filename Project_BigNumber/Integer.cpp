@@ -42,9 +42,8 @@ string Integer::calculate(string input)
 			number.push_back(now_str);
 		}
 		else if ((now_str[0] == '+' || now_str[0] == '-') && now_str.length() > 1) {   //正負數
-			for (int i = 1; i < now_str.length(); i++)
-				if (!isdigit(now_str.at(i)))
-					throw - 2;
+			if (now_str[0] == '+')
+				now_str.erase(0, 1);
 			number.push_back(now_str);
 		}
 		else {   //符號
@@ -89,7 +88,7 @@ string Integer::split_calculate(vector<string>& number, vector<char>& symbol)
 	for (int i = symbol.size() - 1; i >= 0; i--) {
 		if (symbol.at(i) == '^') {   //若遇到次方
 			Integer num1 = number.at(i);
-			Integer num2 = number.at(i+1);
+			Integer num2 = number.at(i + 1);
 			number.at(i) = (num1 ^ num2).tostring();
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
@@ -108,7 +107,7 @@ string Integer::split_calculate(vector<string>& number, vector<char>& symbol)
 		}
 		if (symbol.at(i) == '/') {   //若遇到除
 			Integer num1 = number.at(i);
-			Integer num2 = number.at(i+1);
+			Integer num2 = number.at(i + 1);
 			number.at(i) = (num1 / num2).tostring();
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
@@ -119,7 +118,7 @@ string Integer::split_calculate(vector<string>& number, vector<char>& symbol)
 	for (int i = 0; i < symbol.size(); i++) {
 		if (symbol.at(i) == '+') {   //若遇到加
 			Integer num1 = number.at(i);
-			Integer num2 = number.at(i+1);
+			Integer num2 = number.at(i + 1);
 			number.at(i) = (num1 + num2).tostring();
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
@@ -128,17 +127,14 @@ string Integer::split_calculate(vector<string>& number, vector<char>& symbol)
 		}
 		if (symbol.at(i) == '-') {   //若遇到減
 			Integer num1 = number.at(i);
-			Integer num2 = number.at(i+1);
+			Integer num2 = number.at(i + 1);
 			number.at(i) = (num1 - num2).tostring();
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
 			i--;
 		}
 	}
-	for (int i = 0; i < number.at(0).length(); i++) {
-		if (!isdigit(number.at(0).at(i)))
-			throw -2;
-	}
+
 	return number.at(0);
 }
 
@@ -155,6 +151,7 @@ bool Integer::isAllDigit(string input)
 Integer::Integer() : NumberObject()
 {
 	dec = false;
+	dot = false;
 }
 
 Integer::Integer(const string str) : NumberObject(str)
@@ -162,6 +159,7 @@ Integer::Integer(const string str) : NumberObject(str)
 	positive = fract.numerator[0] == '-' ? false : true;   //是否是負數
 	fract.numerator = positive ? fract.numerator : fract.numerator.substr(1);   //去掉負號
 	dec = false;
+	dot = false;
 }
 
 Integer::Integer(const char* str) : NumberObject()
@@ -174,12 +172,14 @@ Integer::Integer(const char* str) : NumberObject()
 	positive = fract.numerator[0] == '-' ? false : true;   //是否是負數
 	fract.numerator = positive ? fract.numerator : fract.numerator.substr(1);   //去掉負號
 	dec = false;
+	dot = false;
 }
 
 Integer::Integer(const Integer& cp)
 {
 	this->fract = cp.fract;
 	this->positive = cp.positive;
+	dot = false;
 }
 
 const Integer Integer::operator!() const
