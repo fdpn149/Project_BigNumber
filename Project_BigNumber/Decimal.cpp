@@ -48,6 +48,13 @@ Decimal Decimal::calculate(string input)
 			number.push_back(d);
 		}
 		else if ((now_str[0] == '+' || now_str[0] == '-') && now_str.length() > 1) {   //正負數
+			bool dot = false;
+			for (int i = 1; i < now_str.length(); i++) {
+				if (dot == false && now_str.at(i) == '.')
+					dot = true;
+				else if (!isdigit(now_str.at(i)))
+					throw -2;
+			}
 			Decimal d = now_str;
 			number.push_back(d);
 		}
@@ -64,9 +71,9 @@ Decimal Decimal::split_calculate(vector<Decimal>& number, vector<char>& symbol)
 
 	//階乘計算
 	for (int i = 0; i < symbol.size(); i++) {
-		if (symbol[i] == '!') {   //若遇到階乘
-			Decimal num = number[i];
-			number[i] = !num;
+		if (symbol.at(i) == '!') {   //若遇到階乘
+			Decimal num = number.at(i);
+			number.at(i) = !num;
 			symbol.erase(symbol.begin() + i);
 			i--;
 		}
@@ -74,10 +81,10 @@ Decimal Decimal::split_calculate(vector<Decimal>& number, vector<char>& symbol)
 
 	//次方運算
 	for (int i = 0; i < symbol.size(); i++) {
-		if (symbol[i] == '^') {   //若遇到次方
-			Decimal num1 = number[i];
+		if (symbol.at(i) == '^') {   //若遇到次方
+			Decimal num1 = number.at(i);
 			Decimal num2 = number[i + 1];
-			number[i] = num1 ^ num2;
+			number.at(i) = num1 ^ num2;
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
 			i--;
@@ -85,19 +92,19 @@ Decimal Decimal::split_calculate(vector<Decimal>& number, vector<char>& symbol)
 	}
 
 	for (int i = 0; i < symbol.size(); i++) {
-		if (symbol[i] == '*') {   //若遇到乘
-			Decimal num1 = number[i];
+		if (symbol.at(i) == '*') {   //若遇到乘
+			Decimal num1 = number.at(i);
 			Decimal num2 = number[i + 1];
-			number[i] = num1 * num2;
+			number.at(i) = num1 * num2;
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
 			i--;
 			continue;
 		}
-		if (symbol[i] == '/') {   //若遇到除
-			Decimal num1 = number[i];
+		if (symbol.at(i) == '/') {   //若遇到除
+			Decimal num1 = number.at(i);
 			Decimal num2 = number[i + 1];
-			number[i] = num1 / num2;
+			number.at(i) = num1 / num2;
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
 			i--;
@@ -105,19 +112,19 @@ Decimal Decimal::split_calculate(vector<Decimal>& number, vector<char>& symbol)
 	}
 
 	for (int i = 0; i < symbol.size(); i++) {
-		if (symbol[i] == '+') {   //若遇到加
-			Decimal num1 = number[i];
+		if (symbol.at(i) == '+') {   //若遇到加
+			Decimal num1 = number.at(i);
 			Decimal num2 = number[i + 1];
-			number[i] = num1 + num2;
+			number.at(i) = num1 + num2;
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
 			i--;
 			continue;
 		}
-		if (symbol[i] == '-') {   //若遇到減
-			Decimal num1 = number[i];
+		if (symbol.at(i) == '-') {   //若遇到減
+			Decimal num1 = number.at(i);
 			Decimal num2 = number[i + 1];
-			number[i] = num1 - num2;
+			number.at(i) = num1 - num2;
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
 			i--;

@@ -42,6 +42,9 @@ string Integer::calculate(string input)
 			number.push_back(now_str);
 		}
 		else if ((now_str[0] == '+' || now_str[0] == '-') && now_str.length() > 1) {   //¥¿­t¼Æ
+			for (int i = 1; i < now_str.length(); i++)
+				if (!isdigit(now_str.at(i)))
+					throw - 2;
 			number.push_back(now_str);
 		}
 		else {   //²Å¸¹
