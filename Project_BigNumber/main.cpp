@@ -2,14 +2,6 @@
 #include "Decimal.h"
 #include "Integer.h"
 
-struct Variable {
-	string name;
-	string type;
-	string value;
-};
-
-vector<Variable> variable = { {"abc", "Decimal", "3.14"}, {"defg","Integer","98"}, {"hij", "Decimal", "3.14"} };
-
 int main()
 {
 	char firstChar;
@@ -26,6 +18,16 @@ int main()
 			NumberObject::printError(4);
 			break;
 		case 1:   //設定變數
+			try {
+				NumberObject::replaceVariables(input);
+				NumberObject::setVariables(input);
+			}
+			catch (int err) {
+				NumberObject::printError(err);
+			}
+			catch (out_of_range) {
+				NumberObject::printError(-2);
+			}
 			break;
 		case 2:
 		case 3:

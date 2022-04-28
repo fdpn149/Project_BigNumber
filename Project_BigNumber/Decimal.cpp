@@ -75,14 +75,13 @@ Decimal Decimal::split_calculate(vector<Decimal>& number, vector<char>& symbol)
 	}
 
 	//次方運算
-	for (int i = 0; i < symbol.size(); i++) {
+	for (int i = symbol.size() - 1; i >= 0; i--) {
 		if (symbol.at(i) == '^') {   //若遇到次方
 			Decimal num1 = number.at(i);
 			Decimal num2 = number[i + 1];
 			number.at(i) = num1 ^ num2;
 			number.erase(number.begin() + i + 1);
 			symbol.erase(symbol.begin() + i);
-			i--;
 		}
 	}
 
@@ -430,6 +429,7 @@ const Decimal Decimal::operator^(const Decimal& num) const
 	Integer last_quotient = num.fract.numerator;
 	Integer remainder;
 	Integer two = "2";
+	product.positive = this->positive;
 	while (quotient.fract.numerator != "0") {
 		quotient = quotient / two;
 		remainder = last_quotient - (quotient + quotient);
@@ -471,6 +471,14 @@ const Decimal Decimal::operator^(const Decimal& num) const
 		if (!num.positive) {
 			total.fract.numerator.swap(total.fract.denominator);
 		}
+	}
+	if (total.fract.numerator.at(0) == '-') {
+		total.fract.numerator.erase(total.fract.numerator.begin());
+		total.positive = !total.positive;
+	}
+	if (total.fract.denominator.at(0) == '-') {
+		total.fract.denominator.erase(total.fract.denominator.begin());
+		total.positive = !total.positive;
 	}
 	return total;
 }

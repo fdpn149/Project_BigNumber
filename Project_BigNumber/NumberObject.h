@@ -26,6 +26,7 @@ public:
 	const int getNumeratorSize() const;
 	const int getDenominatorSize() const;
 	static int inputJudge(string input);
-	static int replaceVariables(string& input);
+	static void setVariables(string& input);
+	static void replaceVariables(string& input);
 	static void printError(int err);
 };
