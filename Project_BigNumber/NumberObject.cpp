@@ -58,7 +58,7 @@ int NumberObject::inputJudge(string input)
 	stringstream ss(input);
 	string now_str;
 	ss >> now_str;
-	if (now_str == "Set") {
+	if (now_str == "Set") {   //設定變數
 		int total_count = 3;
 		ss >> now_str;
 		if (now_str != "Integer" && now_str != "Decimal")
@@ -74,12 +74,31 @@ int NumberObject::inputJudge(string input)
 		total_count += now_str.length() + 4;
 		if (!(ss >> now_str))
 			return -2;
-		if (inputJudge(input.substr(total_count)) > 1)
+		int result = inputJudge(input.substr(total_count));
+		if (result > 1)
 			return 1;
-		else if (inputJudge(input.substr(total_count)) == -1)
-			return -1;
+		else if (result == -1)
+			return -1;   //找不到變數
 		else
 			return -2;
+	}
+	if (isalpha(now_str.at(0))) {   //更改變數
+		ss.get();
+		if (ss.peek() == '=') {
+			map<string, NumberObject*>::iterator it = variable.find(now_str);
+			ss >> now_str;
+			if (now_str.length() > 1 || (int)ss.tellg() == -1)
+				return -2;
+			if (it == variable.end())
+				return -1;   //找不到變數
+			int result = inputJudge(input.substr((int)ss.tellg() + 1));
+			if (result > 1)
+				return 4;
+			else if (result == -1)
+				return -1;   //找不到變數
+			else
+				return -2;
+		}
 	}
 	short now_figure;   //現在為數字、符號、括號或階乘 (數字:1,符號:2,上括號:4,下括號:8,階乘:16)
 	short next_figure = 5;   //下一個可為數字、符號、括號或階乘 (數字:1,符號:2,上括號:4,下括號:8,階乘:16)
@@ -180,12 +199,30 @@ void NumberObject::setVariables(string& input)
 		}
 		variable[name] = i;
 	}
-	else {   //Decimal
+	else if(now_str == "Decimal") {   //Decimal
 		ss >> now_str;
 		name = now_str;
 		total_count += now_str.length() + 5;
 		Decimal* d = new Decimal(input.substr(total_count).c_str());
 		variable[name] = d;
+	}
+	else {
+		ss.seekg(0);
+		ss >> now_str;
+		total_count = now_str.length() + 3;
+		if (variable[now_str]->dot == true) {
+			Decimal* d = new Decimal(input.substr(total_count).c_str());
+			variable[now_str] = d;
+		}
+		else {
+			Decimal d = input.substr(total_count).c_str();
+			Integer* i = new Integer((d.positive ? "" : "-") + d.findExactlyValue());
+			string::iterator it = find(i->fract.numerator.begin(), i->fract.numerator.end(), '.');
+			if (it != i->fract.numerator.end()) {
+				i->fract.numerator.erase(it, i->fract.numerator.end());
+			}
+			variable[now_str] = i;
+		}
 	}
 }
 
@@ -195,6 +232,9 @@ void NumberObject::replaceVariables(string& input)
 	string now_str;
 	if (input.length() > 3 && input.substr(0, 3) == "Set")
 		ss >> now_str >> now_str >> now_str >> now_str;
+	else if (find(input.begin(), input.end(), '=') != input.end()) {
+		ss >> now_str >> now_str;
+	}
 	while (ss >> now_str) {
 		if (isalpha(now_str[0])) {
 			int ss_loc = ss.tellg();   //ss現在指到的位置

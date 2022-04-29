@@ -49,6 +49,18 @@ int main()
 				NumberObject::printError(-2);
 			}
 			break;
+		case 4:
+			try {
+				NumberObject::replaceVariables(input);
+				NumberObject::setVariables(input);
+			}
+			catch (int err) {
+				NumberObject::printError(err);
+			}
+			catch (out_of_range) {
+				NumberObject::printError(-2);
+			}
+			break;
 		}
 
 		getline(cin, input);
