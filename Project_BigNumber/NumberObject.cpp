@@ -210,10 +210,10 @@ void NumberObject::replaceVariables(string& input)
 				if (it->second->positive == false)
 					result.insert(result.begin(), '-');
 				if (ss_loc == -1)
-					ss_loc = input.length() - now_str.length() + 1;
+					ss_loc = input.length();
 				input.replace(ss_loc - len, len, result);
 				ss.str(input);   //更改ss的值
-				ss.seekg(ss_loc + result.length() - 1);   //將ss指的位置設回來
+				ss.seekg(ss_loc - now_str.length() + result.length());   //將ss指的位置設回來
 			}
 		}
 	}
