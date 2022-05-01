@@ -34,7 +34,11 @@ int main()
 			try {
 				NumberObject::replaceVariables(input);
 				if (condition == 2) {   //整數
-					Integer integer = input.c_str();
+					Decimal decimal = input.c_str();
+					Integer integer = (decimal.positive ? "" : "-") + decimal.findExactlyValue();
+					string::iterator it = find(integer.fract.numerator.begin(), integer.fract.numerator.end(), '.');
+					if (it != integer.fract.numerator.end())
+						integer.fract.numerator.erase(it, integer.fract.numerator.end());
 					cout << integer << endl;
 				}
 				else if (condition == 3) {   //小數	

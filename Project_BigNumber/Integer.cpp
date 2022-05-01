@@ -197,11 +197,12 @@ const Integer Integer::operator!() const
 
 const Integer Integer::operator^(const Integer& num) const
 {
+	if (this->fract.numerator == "0" && !num.positive)
+		throw 0;
 	if (num.positive == false)
 		return Integer("0");
 	if (num.fract.numerator == "0")
 		return Integer("1");
-
 	Integer product = *this;
 	Integer total = "1";
 	Integer quotient = num;

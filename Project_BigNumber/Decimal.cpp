@@ -437,11 +437,9 @@ const Decimal Decimal::operator^(const Decimal& num) const
 		if (remainder == "1")
 			totalN = totalN * product;
 		product = product * product;
-		if (product.fract.numerator.length() > 100 && this->getDenominatorSize() > 100)
-			product.fract.numerator.erase(product.fract.numerator.begin() + 101, product.fract.numerator.end());
 	}
 	Integer totalD = "1";
-	if (this->dec == true) {   //璝┏计计
+	if (this->fract.denominator != "1") {   //璝┏计计
 		product = this->fract.denominator;
 		quotient = num.fract.numerator;
 		last_quotient = num.fract.numerator;
@@ -453,8 +451,6 @@ const Decimal Decimal::operator^(const Decimal& num) const
 			if (remainder == "1")
 				totalD = totalD * product;
 			product = product * product;
-			if (product.fract.numerator.length() > 100 && this->getDenominatorSize() > 100)
-				product.fract.numerator.erase(product.fract.numerator.begin() + 101, product.fract.numerator.end());
 		}
 	}
 	Decimal total;
@@ -468,9 +464,6 @@ const Decimal Decimal::operator^(const Decimal& num) const
 	}
 	if (num.fract.denominator == "2") {
 		sqrt(total);
-		if (!num.positive) {
-			total.fract.numerator.swap(total.fract.denominator);
-		}
 	}
 	if (total.fract.numerator.at(0) == '-') {
 		total.fract.numerator.erase(total.fract.numerator.begin());
